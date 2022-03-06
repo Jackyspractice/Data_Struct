@@ -1,0 +1,88 @@
+jacky@jacky-ubuntu:~/Desktop/CTF$ cd "/home/jacky/Desktop/CTF/TO_Github/My_Ubuntu_CodingFiles/資結HW/" && g++ DS2ex1_10828152.cpp -o DS2ex1_10828152 && "/home/jacky/Desktop/CTF/TO_Github/My_Ubuntu_CodingFiles/資結HW/"DS2ex1_10828152
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+1
+Please input file name...
+Ex:input101
+input101
+<MAX Heap>
+serial = 21, root = 929
+serial = 13, bottom = 189
+serial = 8, leftbottom = 200
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+2
+Please input file name...
+Ex:input101
+input101
+<Deap>
+serial = 18, bottom = 485
+serial = 23, leftbottom = 232
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+1
+Please input file name...
+Ex:input101
+input102
+<MAX Heap>
+serial = 34, root = 929
+serial = 46, bottom = 279
+serial = 32, leftbottom = 124
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+2
+Please input file name...
+Ex:input101
+input102
+<Deap>
+serial = 47, bottom = 344
+serial = 23, leftbottom = 198
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+1
+Please input file name...
+Ex:input101
+input103
+<MAX Heap>
+serial = 30, root = 975
+serial = 104, bottom = 0
+serial = 16, leftbottom = 18
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+2
+Please input file name...
+Ex:input101
+input103
+<Deap>
+serial = 72, bottom = 45
+serial = 63, leftbottom = 32
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+1
+Please input file name...
+Ex:input101
+input105
+<MAX Heap>
+serial = 9976, root = 3559
+serial = 10072, bottom = 0
+serial = 512, leftbottom = 13
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+2
+Please input file name...
+Ex:input101
+input105
+<Deap>
+serial = 5036, bottom = 32
+serial = 4096, leftbottom = 170
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+1
+Please input file name...
+Ex:input101
+input104
+<MAX Heap>
+serial = 439, root = 511
+serial = 2502, bottom = 34
+serial = 256, leftbottom = 7
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+2
+Please input file name...
+Ex:input101
+input104
+<Deap>
+serial = 2503, bottom = 43
+serial = 64, leftbottom = 32
+(Stop, Max Heap, Deap) = (0, 1, 2): 
+0
