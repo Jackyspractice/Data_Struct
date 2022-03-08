@@ -10,6 +10,7 @@ using namespace std;
 void heapRebuild(int root);
 void heapinsert(int new_input);
 void deapinsert(int new_input);
+void min_maxheapinsert(int new_input);
 void maxheapinsert(int mirro);
 void minheapinsert(int mirro);
 string check(string input);
@@ -25,11 +26,11 @@ int main(){
     while(1){
 
         //輸入判斷
-        cout << "(Stop, Max Heap, Deap) = (0, 1, 2): \n";
+        cout << "(Stop, Max Heap, Deap) = (0, 1, 2, 3): \n";
         int which = 100;
         cin >> which;
         if (which == 0) return 0;
-        else if (which != 1 && which != 2){
+        else if (which != 1 && which != 2 && which != 3){
             cout << "Enter error!!!\n";
             continue;
         }
@@ -142,6 +143,79 @@ int main(){
                 cout << "serial = " << read.students[x][1]<< ", leftbottom = " << read.students[x][0] << "\n";
                 delete [] read.students;
                 //system("pause");
+            }
+
+            //min-max heap
+            else if(which == 3){
+                read.students = new int*[read.size];//重新配置陣列大小
+                read.sizeofstudent = 0;//重置陣列數
+                for(int i = 0; i < read.size; i++) read.students[i] = new int[2];//宣告兩欄資料，一欄第一欄放學生數，二欄放序號
+
+                for(int i = 6; i < buffer.size(); i += 10){
+                    buffer[i] = check(buffer[i]);
+                    //cout << buffer[i] << "\n";
+                    //read.students[j] = buffer[i];
+                    //read.students.push_back(buffer[i]);
+                    string toint = buffer[i];
+                    int intbuffer = stoi(toint); //將buffer裡的string 轉成 int，目的是要能夠宣告int的2維陣列
+                    //Max Heap
+                    min_maxheapinsert(intbuffer);
+                    
+                }buffer.empty();
+
+                cout << "<min-Max Heap>\n";
+                //root
+                cout << "serial = " << read.students[0][1] + 1 << ", root = " << read.students[0][0] << "\n";
+                //bottom
+                cout << "serial = " << read.students[read.size - 1][1] + 1 << ", bottom = " << read.students[read.size - 1][0] << "\n";
+                //leftbottom
+                int n = int(log2(read.size)); 
+                int x = pow(2, n) - 1;
+                cout << "serial = " << read.students[x][1] + 1 << ", leftbottom = " << read.students[x][0] << "\n";
+                delete [] read.students;//釋出
+                //system("pause");
+            }
+        }
+    }
+}
+
+void min_maxheapinsert(int new_input){
+    read.students[read.sizeofstudent][0] = new_input;//新增資料
+    read.students[read.sizeofstudent][1] = read.sizeofstudent;//加入序號
+    int place = read.sizeofstudent;
+    int parent = (read.sizeofstudent - 1) / 2;
+    int layer = int(log2(read.sizeofstudent + 1));
+    //判斷新增資料在奇數還偶數
+    if(parent >= 0 && ((layer + 1) % 2 != 0)){//奇數min heap
+        //再判斷是否大於其parent
+        if(read.students[read.sizeofstudent][0] > read.students[parent][0]){
+            swap(read.students[read.sizeofstudent][0], read.students[parent][0]);
+            swap(read.students[read.sizeofstudent][1], read.students[parent][1]);
+            place = parent;
+            parent = (((place - 1) / 2) - 1) / 2;
+
+            while((parent >= 0) && (read.students[place][0] > read.students[parent][0])){
+            swap(read.students[place][0], read.students[parent][0]);
+            swap(read.students[place][1], read.students[parent][1]);
+            place = parent;
+            parent = (((place - 1) / 2) - 1) / 2;
+            }
+        }
+    }
+
+    else if(parent > 0 && ((layer + 1) % 2 == 0)){//偶數max heap
+        //再判斷是否小於其parent
+        if(read.students[read.sizeofstudent][0] < read.students[parent][0]){
+            swap(read.students[read.sizeofstudent][0], read.students[parent][0]);
+            swap(read.students[read.sizeofstudent][1], read.students[parent][1]);
+            place = parent;
+            parent = (((place - 1) / 2) - 1) / 2;
+
+            while((parent >= 0) && (read.students[place][0] < read.students[parent][0])){
+            swap(read.students[place][0], read.students[parent][0]);
+            swap(read.students[place][1], read.students[parent][1]);
+            place = parent;
+            parent = (((place - 1) / 2) - 1) / 2;
             }
         }
     }
