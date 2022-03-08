@@ -3,7 +3,7 @@
 #include<fstream>
 #include<vector>
 #include<string>
-#include <bits/stdc++.h>
+#include<math.h>
 
 using namespace std;
 
@@ -99,7 +99,7 @@ int main(){
                     //deapinsert(intbuffer);
                     //cout  << j + 1 << " = " << read.students[j] << "\n";
                     //j++;
-                }buffer.empty();
+                }buffer.clear();
 
                 cout << "<MAX Heap>\n";
                 cout << "serial = " << read.students[0][1] + 1 << ", root = " << read.students[0][0] << "\n";
@@ -132,7 +132,7 @@ int main(){
                     deapinsert(intbuffer);
                     //cout  << j + 1 << " = " << read.students[j] << "\n";
                     //j++;
-                }buffer.empty();
+                }buffer.clear();
 
                 cout << "<Deap>\n";
                 cout << "serial = " << read.students[read.size - 1][1]<< ", bottom = " << read.students[read.size - 1][0] << "\n";
@@ -161,7 +161,7 @@ int main(){
                     //Max Heap
                     min_maxheapinsert(intbuffer);
                     
-                }buffer.empty();
+                }buffer.clear();
 
                 cout << "<min-Max Heap>\n";
                 //root
