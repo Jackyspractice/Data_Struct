@@ -186,39 +186,80 @@ void min_maxheapinsert(int new_input){
     int parent = (read.sizeofstudent - 1) / 2;
     int layer = int(log2(read.sizeofstudent + 1));
     //判斷新增資料在奇數還偶數
-    if(parent >= 0 && ((layer + 1) % 2 != 0)){//奇數min heap
+    if((parent >= 0) && ((layer + 1) % 2 != 0)){//奇數min heap
         //再判斷是否大於其parent
         if(read.students[read.sizeofstudent][0] > read.students[parent][0]){
             swap(read.students[read.sizeofstudent][0], read.students[parent][0]);
             swap(read.students[read.sizeofstudent][1], read.students[parent][1]);
-            place = parent;
-            parent = (((place - 1) / 2) - 1) / 2;
+            for(int i = 0; i < read.sizeofstudent; i++){
+                cout << "data at min heap < parent\n";
+                cout << i << " = " << read.students[i][0] << "\n";
+            }
 
-            while((parent >= 0) && (read.students[place][0] > read.students[parent][0])){
-            swap(read.students[place][0], read.students[parent][0]);
-            swap(read.students[place][1], read.students[parent][1]);
             place = parent;
-            parent = (((place - 1) / 2) - 1) / 2;
+            int gparent = (((place - 1) / 2) - 1) / 2;
+
+            while((gparent >= 0) && (read.students[place][0] > read.students[gparent][0])){
+                swap(read.students[place][0], read.students[gparent][0]);
+                swap(read.students[place][1], read.students[gparent][1]);
+                for(int i = 0; i < read.sizeofstudent; i++){
+                cout << i << " = " << read.students[i][0] << "\n";
+                }
+                place = gparent;
+                gparent = (((place - 1) / 2) - 1) / 2;
+            }
+        }
+
+        else if ((parent >= 0) && (read.students[read.sizeofstudent][0] < read.students[parent][0])){
+            int gparent = (((place - 1) / 2) - 1) / 2;
+            while((parent >= 0) && (read.students[place][0] < read.students[gparent][0])){
+                swap(read.students[place][0], read.students[gparent][0]);
+                swap(read.students[place][1], read.students[gparent][1]);
+                for(int i = 0; i < read.sizeofstudent; i++){
+                cout << i << " = " << read.students[i][0] << "\n";
+                }
+                place = gparent;
+                gparent = (((place - 1) / 2) - 1) / 2;
             }
         }
     }
 
-    else if(parent > 0 && ((layer + 1) % 2 == 0)){//偶數max heap
+    else if((parent >= 0) && ((layer + 1) % 2 == 0)){//偶數max heap
         //再判斷是否小於其parent
         if(read.students[read.sizeofstudent][0] < read.students[parent][0]){
             swap(read.students[read.sizeofstudent][0], read.students[parent][0]);
             swap(read.students[read.sizeofstudent][1], read.students[parent][1]);
+            for(int i = 0; i < read.sizeofstudent; i++){
+                cout << i << " = " << read.students[i][0] << "\n";
+            }
             place = parent;
-            parent = (((place - 1) / 2) - 1) / 2;
+            int gparent = (((place - 1) / 2) - 1) / 2;
 
             while((parent >= 0) && (read.students[place][0] < read.students[parent][0])){
-            swap(read.students[place][0], read.students[parent][0]);
-            swap(read.students[place][1], read.students[parent][1]);
-            place = parent;
-            parent = (((place - 1) / 2) - 1) / 2;
+                swap(read.students[place][0], read.students[gparent][0]);
+                swap(read.students[place][1], read.students[gparent][1]);
+                for(int i = 0; i < read.sizeofstudent; i++){
+                cout << i << " = " << read.students[i][0] << "\n";
+                }
+                place = gparent;
+                gparent = (((place - 1) / 2) - 1) / 2;
+            }
+        }
+        //沒有小於parent
+        else if ((parent >= 0) && (read.students[read.sizeofstudent][0] > read.students[parent][0])){
+            int gparent = (((place - 1) / 2) - 1) / 2;
+            while((parent >= 0) && (read.students[place][0] > read.students[gparent][0])){
+                swap(read.students[place][0], read.students[gparent][0]);
+                swap(read.students[place][1], read.students[gparent][1]);
+                for(int i = 0; i < read.sizeofstudent; i++){
+                cout << i << " = " << read.students[i][0] << "\n";
+                }
+                place = gparent;
+                gparent = (((place - 1) / 2) - 1) / 2;
             }
         }
     }
+    read.sizeofstudent++;
 }
 
 void deapinsert(int new_input){
