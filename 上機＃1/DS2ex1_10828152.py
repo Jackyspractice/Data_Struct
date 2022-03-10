@@ -1,3 +1,4 @@
+#10828152 張泓傑 電機三甲
 from cmath import log
 import math
 
