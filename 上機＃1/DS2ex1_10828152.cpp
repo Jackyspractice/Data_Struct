@@ -67,6 +67,7 @@ int main(){
                     ptrline = strtok(NULL, " ");
                 }*/
                 buffer.push_back(line);
+                //cout << "data = " << line << "\n";
             }
             file.close();
 
