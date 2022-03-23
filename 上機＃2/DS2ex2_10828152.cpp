@@ -25,15 +25,8 @@ int main(){
             continue;
         }
         //read file
-
+        
     }
-
-
-
-
-
-
-
 
     cin >> collegeType.sNO;
     cout << collegeType.sNO;

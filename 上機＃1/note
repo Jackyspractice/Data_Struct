@@ -1,0 +1,69 @@
+step 1
+put serial number in every data
+要使用兩種class
+step 2
+using vector to store lines of data
+step 3
+using serial number building MAX HEAP
+step 4
+find root of tree
+底部節點？
+左下角節點？
+
+heap
+
+min-heap
+保證最小最上面/樹根 適合用array
+
+max-heap
+最大在樹根/最上面 
+
+heap 保證樹的平衡 1. compleate binary tree
+		2. 任何一個樹葉到樹根只有一條路 每一條路就是排序好的結果
+		
+heap 的重要位置 bottom  下一個要新增資料的位置 也就是陣列的資料量 而此新增的資料要和此路徑上的資料做比較，確保路徑是大到小或小到大，
+										此比較方法就是bobblesort ＝＝> the reheapup function 新增資料的function
+										the reheapdown function ==> 取出樹根的function
+										
+
+
+min max heap 效率一樣
+
+
+
+huffman coding using heap ? 
+將資料建立二元樹
+
+
+heap 會用到的 function
+
+bool heapIsEmpty
+void heapInsert
+void heapDelete
+void heapRebuild
+
+class
+HeapItemType items[MAX_HEAP]
+//heap item array
+int size 
+//number of heap item
+
+min-max 
+
+雙向heap 左子樹，右子數分別為minheap, max heap
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
