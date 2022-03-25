@@ -4,7 +4,6 @@
 #include<vector>
 
 using namespace std;
-
 class collegeType{
     public:
         int number;//serial
@@ -14,6 +13,51 @@ class collegeType{
         string level;//6
         int sNO;//7nuber of students
 };collegeType input;
+
+struct node{
+    collegeType data;
+    int height;
+    struct node* left;
+    struct node* right;
+};
+
+node* insert(collegeType in, node* tree){
+    if(tree == NULL){//當tree為空時，新增至root
+        tree = new node;
+        tree->data = in;
+        tree->height = 0;
+        tree->left = tree->right = NULL;
+    }
+    if(in.sNO < tree->data.sNO){//新增資料小於時，指派至左子樹
+        tree->left = insert(in, tree->left);
+    }
+    
+}
+
+
+/*class AVL{
+    struct node{
+        collegeType data;
+        int height;
+        struct node* left;
+        struct node* right;
+    };
+    node* root;
+    node* insert(collegeType in, node* avl){
+        if(avl == NULL){//當tree為空時，新增至root
+            avl = new node;
+            avl->data = in;
+            avl->height = 0;
+            avl->left = avl->right = NULL;
+        }
+        else if(in.sNO < avl->data.sNO){
+            //新增資料小於其parent，插入其left
+            avl->left = insert(in, avl->left);
+            //判斷BF是否超出
+            if
+        }
+    }
+};*/
 
 void store(int i, vector<string> &buffer, collegeType &input);
 string check(string input);
@@ -32,7 +76,7 @@ int main(){
             continue;
         }
         //read file
-        cout << "Please input file name...\n";
+        cout << "Please input file name...\nEX:204\n";
         ifstream file;
         string fileinput = "input";
         string filenumber;
@@ -68,7 +112,7 @@ int main(){
 
 
             else if(which == 2){//AVL
-                int size = buffer.size() / 11 + 1;
+                int size = (buffer.size() - 1) / 10;
                 cout << "size = " << size << "\n";
                 cout << "buffersize = " << buffer.size() << "\n";
                 if(size <= 0){
@@ -78,7 +122,7 @@ int main(){
                 collegeType input[size];
                 for(int i = 0; i < size; i++){
                     store(i, buffer, input[i]);
-                    //cout << "serial = " << input[i].number << ", sNO = " << input[i].sNO << "\n";
+                    cout << "serial = " << input[i].number << ", sNO = " << input[i].sNO << "\n";
                     AVL_insert(input[i]);
                 }
 
