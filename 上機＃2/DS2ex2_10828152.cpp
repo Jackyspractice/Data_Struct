@@ -2,6 +2,7 @@
 #include<fstream>
 #include<string>
 #include<vector>
+#include<stdio.h>
 
 using namespace std;
 class collegeType{
@@ -18,7 +19,7 @@ class collegeType{
 class node{
     public:
     collegeType data;
-    vector<int> departnumber;//第一筆資料必為科系代碼，第二筆開始為相同科系後來加入的序號。
+    vector<int> departnumber;//為相同科系後來加入的序號。
     int height;
     struct node* left;
     struct node* right;
@@ -27,7 +28,7 @@ class node{
 node* insert(collegeType in, node* tree);
 void store(int i, vector<string> &buffer, collegeType &input);
 string check(string input);
-int max(int a, int b) {return (a > b)? a : b;}
+int max(int a, int b) {return (a >= b)? a : b;}
 int height(node* n){ return (n == NULL)? 0 : n->height;}
 int BF(node* x) {
     if(x == NULL) return 0;
@@ -94,18 +95,20 @@ int main(){
                 collegeType input[size];
                 node* root = NULL;
                 for(int i = 0; i < size; i++){
-                    cout << "input " << i + 1 << " data\n";
+                    //cout << "input " << i + 1 << " data\n";
                     store(i, buffer, input[i]);
                     //cout << "insert input in root...\n";
                     root = insert(input[i], root);
-                    cout << "serial = " << input[i].department_number << ", sNO = " << input[i].sNO << "\n";
+                    //cout << "serial = " << input[i].department_number << ", sNO = " << input[i].sNO << "\n";
                 }
 
                 cout << "root->departnumber.size() = " << root->departnumber.size() << "\n";
                 cout << "tree height = " << height(root) << "\n";
 
                 for(int i = 0; i < root->departnumber.size(); i++){
-                    cout << root->departnumber[i] << "\n";
+                    cout << i << ":[" << root->departnumber[i] << "]\t" << input[root->departnumber[i]].school;
+                    cout << "\t" << input[root->departnumber[i]].department << "\t" << input[root->departnumber[i]].dayclub;
+                    cout << "\t" << input[root->departnumber[i]].level << "\t" << input[root->departnumber[i]].sNO << "\n";
                 }
 
             }
@@ -118,73 +121,81 @@ node* insert(collegeType in, node* tree){
         tree = new node;
         tree->data = in;
         tree->departnumber.push_back(in.number);
-        cout << "tree is null, departnumber is " << tree->departnumber[0] << "\n";
+        //cout << "tree is null, departnumber is " << tree->departnumber[0] << "\n";
         tree->height = 1;
         tree->left = tree->right = NULL;
         return tree;
     }
 
-    cout << "in depart is " << in.department_number << "\n";
-    cout << "tree data depart is " << tree->data.department_number << "\n";
+    cout << "in depart is " << in.department_number << "\t";
+    cout << tree->data.department_number << " tree data depart"<< "\n";
 
     if(in.department_number < tree->data.department_number){//新增資料小於時，指派至左子樹
-        cout << "insert to left\n";
+        //cout << "insert to left\n";
         tree->left = insert(in, tree->left);
     }
     else if(in.department_number > tree->data.department_number){//新增資料大於時，指派至右子樹
-        cout << "insert to right\n";
+        //cout << "insert to right\n";
         tree->right = insert(in, tree->right);
     }
     else{//新增資料等於時，表示科系相同，則紀錄序號
         cout << "input is the same depart, which serial is " << in.number << "\n";
         tree->departnumber.push_back(in.number);
-    };
+        return tree;
+    }
 
     //新增完後，更改parent的高度
     tree->height = max(height(tree->left), height(tree->right)) + 1;
     //cout << tree->height;
 
-    if(BF(tree) > 1 && in.department_number < tree->left->data.department_number) return rr(tree);
-    if(BF(tree) < -1 && in.department_number > tree->right->data.department_number) return ll(tree);
-    if(BF(tree) > 1 && in.department_number > tree->left->data.department_number) return lr(tree);
-    if(BF(tree) < -1 && in.department_number < tree->right->data.department_number) return rl(tree);
+    int bf = BF(tree);
+    //cout << "BF(tree) is " << bf << "\n";
+
+    if(bf > 1 && in.department_number < tree->left->data.department_number) return rr(tree);
+    if(bf < -1 && in.department_number > tree->right->data.department_number) return ll(tree);
+    if(bf > 1 && in.department_number > tree->left->data.department_number) return lr(tree);
+    if(bf < -1 && in.department_number < tree->right->data.department_number) return rl(tree);
     return tree;
 }
 
 node* rr(node* y){
+    //cout << "need rr\n";
     node* x = y->left;
     node* xr = x->right;
 
     x->right = y;
     y->left = xr;
 
-    y->height = max(height(y->left), height(y->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;//先更改的先更新，不然上方的height會錯。
     x->height = max(height(x->left), height(x->right)) + 1;
 
     return x;
 }
 
 node* ll(node* x){
+    //cout << "need ll\n";
     node* y = x->right;
     node* xr = y->left;
 
     y->left = x;
     x->right = xr;
 
-    y->height = max(height(y->left), height(y->right)) + 1;
     x->height = max(height(x->left), height(x->right)) + 1;
+    y->height = max(height(y->left), height(y->right)) + 1;
 
     return y;
 }
 
 node* rl(node* x){
-    x->left = ll(x->left);
-    return rr(x);
+    //cout << "need rl\n";
+    x->right = rr(x->right);
+    return ll(x);
 }
 
 node* lr(node* x){
-    x->right = rr(x->right);
-    return ll(x);
+    //cout << "need lr\n";
+    x->left = ll(x->left);
+    return rr(x);
 }
 
 void store(int i, vector<string> &buffer, collegeType &input){
@@ -198,7 +209,7 @@ void store(int i, vector<string> &buffer, collegeType &input){
     input.level = buffer[whereis + 4];
     input.sNO = stoi(check(buffer[whereis + 5]));
     //cout << "serial = " << input.number << ", sNO = " << input.sNO << "\n";
-    cout << "store finish\n";
+    //cout << "store finish\n";
 }
 
 string check(string input){
