@@ -8,6 +8,7 @@ class collegeType{
     public:
         int number;//serial
         string school;//2
+        int department_number;//3
         string department;//4
         string dayclub;//5
         string level;//6
@@ -16,52 +17,24 @@ class collegeType{
 
 struct node{
     collegeType data;
+    vector<int> departnumber;//第一筆資料必為科系代碼，第二筆開始為相同科系後來加入的序號。
     int height;
     struct node* left;
     struct node* right;
 };
 
-node* insert(collegeType in, node* tree){
-    if(tree == NULL){//當tree為空時，新增至root
-        tree = new node;
-        tree->data = in;
-        tree->height = 0;
-        tree->left = tree->right = NULL;
-    }
-    if(in.sNO < tree->data.sNO){//新增資料小於時，指派至左子樹
-        tree->left = insert(in, tree->left);
-    }
-    
-}
-
-
-/*class AVL{
-    struct node{
-        collegeType data;
-        int height;
-        struct node* left;
-        struct node* right;
-    };
-    node* root;
-    node* insert(collegeType in, node* avl){
-        if(avl == NULL){//當tree為空時，新增至root
-            avl = new node;
-            avl->data = in;
-            avl->height = 0;
-            avl->left = avl->right = NULL;
-        }
-        else if(in.sNO < avl->data.sNO){
-            //新增資料小於其parent，插入其left
-            avl->left = insert(in, avl->left);
-            //判斷BF是否超出
-            if
-        }
-    }
-};*/
-
+node* insert(collegeType in, node* tree);
 void store(int i, vector<string> &buffer, collegeType &input);
 string check(string input);
-void AVL_insert(collegeType &input);
+int max(int a, int b) { return (a > b)? a : b;}
+int BF(node* x) {
+    if(x == NULL) return 0;
+    else return x->left->height - x->right->height;
+}
+node* rr(node* y);
+node* ll(node* x);
+node* rl(node* x);
+node* lr(node* x);
 
 int main(){
 
@@ -122,8 +95,7 @@ int main(){
                 collegeType input[size];
                 for(int i = 0; i < size; i++){
                     store(i, buffer, input[i]);
-                    cout << "serial = " << input[i].number << ", sNO = " << input[i].sNO << "\n";
-                    AVL_insert(input[i]);
+                    cout << "serial = " << input[i].department_number << ", sNO = " << input[i].sNO << "\n";
                 }
 
 
@@ -133,8 +105,68 @@ int main(){
     }
 }
 
-void AVL_insert(collegeType &input){
+node* insert(collegeType in, node* tree){
+    if(tree == NULL){//當tree為空時，新增至root
+        tree = new node;
+        tree->data = in;
+        tree->departnumber.push_back(in.department_number);
+        tree->height = 1;
+        tree->left = tree->right = NULL;
+    }
+    if(in.department_number < tree->data.department_number){//新增資料小於時，指派至左子樹
+        tree->left = insert(in, tree->left);
+    }
+    else if(in.department_number > tree->data.department_number){//新增資料大於時，指派至右子樹
+        tree->right = insert(in, tree->right);
+    }
+    else{//新增資料等於時，表示科系相同，則紀錄序號
+        tree->departnumber.push_back(in.number);
+    };
+
+    //新增完後，更改parent的高度
+    tree->height = max(tree->left->height, tree->right->height) + 1;
     
+    if(BF(tree) > 1 && in.department_number < tree->left->data.department_number) return rr(tree);
+    if(BF(tree) < -1 && in.department_number > tree->right->data.department_number) return ll(tree);
+    if(BF(tree) > 1 && in.department_number > tree->left->data.department_number) return lr(tree);
+    if(BF(tree) < -1 && in.department_number < tree->right->data.department_number) return rl(tree);
+    return tree;
+}
+
+node* rr(node* y){
+    node* x = y->left;
+    node* xr = x->right;
+
+    x->right = y;
+    y->left = xr;
+
+    y->height = max(y->left->height, y->right->height) + 1;
+    x->height = max(x->left->height, x->right->height) + 1;
+
+    return x;
+}
+
+node* ll(node* x){
+    node* y = x->right;
+    node* xr = y->left;
+
+    y->left = x;
+    x->right = xr;
+
+    y->height = max(y->left->height, y->right->height) + 1;
+    x->height = max(x->left->height, x->right->height) + 1;
+
+    return y;
+}
+
+node* rl(node* x){
+    x->left = ll(x->left);
+    return rr(x);
+}
+
+node* lr(node* x){
+    x->right = rr(x->right);
+    return ll(x);
 }
 
 void store(int i, vector<string> &buffer, collegeType &input){
@@ -142,6 +174,7 @@ void store(int i, vector<string> &buffer, collegeType &input){
     //if(i == 0 || i == 1) whereis++;
     input.number = i + 1;
     input.school = buffer[whereis];
+    input.department_number = stoi(buffer[whereis + 1]);
     input.department = buffer[whereis + 2];
     input.dayclub = buffer[whereis + 3];
     input.level = buffer[whereis + 4];
