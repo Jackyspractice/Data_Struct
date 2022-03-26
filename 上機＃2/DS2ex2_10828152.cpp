@@ -44,7 +44,7 @@ int main(){
     while(1){
         //which
         int which = 777;
-        cout << "哈囉(Stop, 23Tree, AVL) = (0, 1, 2)\n";
+        cout << "(Stop, 23Tree, AVL) = (0, 1, 2)\n";
         cin >> which;
         if (which == 0) return 0;
         else if (which != 1 && which != 2 && which != 3){
@@ -131,11 +131,11 @@ node* insert(collegeType in, node* tree){
     cout << "in depart is " << in.department_number << "\t";
     cout << tree->data.department_number << " tree data depart"<< "\n";
 
-    if(in.department_number < tree->data.department_number){//新增資料小於時，指派至左子樹
+    if(in.department < tree->data.department){//新增資料小於時，指派至左子樹
         cout << "insert to left\n";
         tree->left = insert(in, tree->left);
     }
-    else if(in.department_number > tree->data.department_number){//新增資料大於時，指派至右子樹
+    else if(in.department > tree->data.department){//新增資料大於時，指派至右子樹
         cout << "insert to right\n";
         tree->right = insert(in, tree->right);
     }
@@ -152,10 +152,10 @@ node* insert(collegeType in, node* tree){
     int bf = BF(tree);
     cout << "BF(tree) is " << bf << "\n";
 
-    if(bf > 1 && in.department_number < tree->left->data.department_number) return rr(tree);
-    if(bf < -1 && in.department_number > tree->right->data.department_number) return ll(tree);
-    if(bf > 1 && in.department_number > tree->left->data.department_number) return lr(tree);
-    if(bf < -1 && in.department_number < tree->right->data.department_number) return rl(tree);
+    if(bf > 1 && in.department < tree->left->data.department) return rr(tree);
+    if(bf < -1 && in.department > tree->right->data.department) return ll(tree);
+    if(bf > 1 && in.department > tree->left->data.department) return lr(tree);
+    if(bf < -1 && in.department < tree->right->data.department) return rl(tree);
     return tree;
 }
 
