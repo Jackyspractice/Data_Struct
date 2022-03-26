@@ -95,7 +95,7 @@ int main(){
                 collegeType input[size];
                 node* root = NULL;
                 for(int i = 0; i < size; i++){
-                    //cout << "input " << i + 1 << " data\n";
+                    cout << "input " << i + 1 << " data\n";
                     store(i, buffer, input[i]);
                     //cout << "insert input in root...\n";
                     root = insert(input[i], root);
@@ -103,12 +103,13 @@ int main(){
                 }
 
                 cout << "root->departnumber.size() = " << root->departnumber.size() << "\n";
-                cout << "tree height = " << height(root) << "\n";
-
+                cout << "tree height = " << max(height(root->left), height(root->right)) + 1 << "\n";
+                
                 for(int i = 0; i < root->departnumber.size(); i++){
-                    cout << i << ":[" << root->departnumber[i] << "]\t" << input[root->departnumber[i]].school;
-                    cout << "\t" << input[root->departnumber[i]].department << "\t" << input[root->departnumber[i]].dayclub;
-                    cout << "\t" << input[root->departnumber[i]].level << "\t" << input[root->departnumber[i]].sNO << "\n";
+                    int vectorserial = root->departnumber[i];
+                    cout << i + 1 << ":[" << vectorserial << "]\t" << input[vectorserial - 1].school;
+                    cout << "\t" << input[vectorserial - 1].department << "\t" << input[vectorserial - 1].dayclub;
+                    cout << "\t" << input[vectorserial - 1].level << "\t" << input[vectorserial - 1].sNO << "\n";
                 }
 
             }
@@ -118,10 +119,10 @@ int main(){
 
 node* insert(collegeType in, node* tree){
     if(tree == NULL){//當tree為空時，新增至root
-        tree = new node;
+        tree = new node();
         tree->data = in;
         tree->departnumber.push_back(in.number);
-        //cout << "tree is null, departnumber is " << tree->departnumber[0] << "\n";
+        cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
         tree->height = 1;
         tree->left = tree->right = NULL;
         return tree;
@@ -131,11 +132,11 @@ node* insert(collegeType in, node* tree){
     cout << tree->data.department_number << " tree data depart"<< "\n";
 
     if(in.department_number < tree->data.department_number){//新增資料小於時，指派至左子樹
-        //cout << "insert to left\n";
+        cout << "insert to left\n";
         tree->left = insert(in, tree->left);
     }
     else if(in.department_number > tree->data.department_number){//新增資料大於時，指派至右子樹
-        //cout << "insert to right\n";
+        cout << "insert to right\n";
         tree->right = insert(in, tree->right);
     }
     else{//新增資料等於時，表示科系相同，則紀錄序號
@@ -146,10 +147,10 @@ node* insert(collegeType in, node* tree){
 
     //新增完後，更改parent的高度
     tree->height = max(height(tree->left), height(tree->right)) + 1;
-    //cout << tree->height;
+    cout << "tree hight is " << tree->height << "\n";
 
     int bf = BF(tree);
-    //cout << "BF(tree) is " << bf << "\n";
+    cout << "BF(tree) is " << bf << "\n";
 
     if(bf > 1 && in.department_number < tree->left->data.department_number) return rr(tree);
     if(bf < -1 && in.department_number > tree->right->data.department_number) return ll(tree);
@@ -159,7 +160,7 @@ node* insert(collegeType in, node* tree){
 }
 
 node* rr(node* y){
-    //cout << "need rr\n";
+    cout << "need rr\n";
     node* x = y->left;
     node* xr = x->right;
 
@@ -173,7 +174,7 @@ node* rr(node* y){
 }
 
 node* ll(node* x){
-    //cout << "need ll\n";
+    cout << "need ll\n";
     node* y = x->right;
     node* xr = y->left;
 
@@ -187,13 +188,13 @@ node* ll(node* x){
 }
 
 node* rl(node* x){
-    //cout << "need rl\n";
+    cout << "need rl\n";
     x->right = rr(x->right);
     return ll(x);
 }
 
 node* lr(node* x){
-    //cout << "need lr\n";
+    cout << "need lr\n";
     x->left = ll(x->left);
     return rr(x);
 }
