@@ -1,4 +1,4 @@
-// DS2ex1_10824147 蔡尚博 
+// DS2ex2_31_10824147_10828152  電資三_蔡尚博 電機三甲_張泓傑
 #include<iostream>
 #include<fstream>
 #include<string>
@@ -519,26 +519,28 @@ class node{
 		}
 
 		void Result(vector<collegeType> input, node* root){
-
-			cout << "start result\n";
+			
 			cout << "tree height = " << max(cheight(root->left), cheight(root->right)) + 1 << "\n"; 
+			//cout << "start result\n";
 			for(int i = 0; i < root->departnumber.size(); i++){
 				int vectorserial = root->departnumber[i];
-				cout << i + 1 << ":[" << vectorserial << "]\t" << input[vectorserial - 1].school;
+				//cout << "vectorserial = \n" << vectorserial;
+				cout << i + 1 << ":[" << vectorserial << "]" << input[vectorserial - 1].school;
 				cout << "\t" << input[vectorserial - 1].department << "\t" << input[vectorserial - 1].dayclub;
 				cout << "\t" << input[vectorserial - 1].level << "\t" << input[vectorserial - 1].sNO << "\n";
-			
 			}
+			//node* root = NULL;
 		}
 
-		void Build(vector<collegeType>data, node* root) {
+		node* Build(vector<collegeType>data, node* root) {
 			
-			cout << "data size = " << data.size() - 1 << "\n";
-			for ( int i = 0; i < data.size() - 1; i++ ) {
-				cout << "insert data" << data[i].dname << "\n";
+			//cout << "data size = " << data.size() << "\n";
+			for ( int i = 0; i < data.size(); i++ ) {
+				//cout << "insert data " << data[i].dname << "\n";
 				root = insert( data[i],  root) ;
-			} 
-			cout << "Build end\n";
+			}
+			return root;
+			//cout << "Build end\n";
 		} // Build 將資料一筆筆放入
 
 		node* insert(collegeType in, node* tree){
@@ -546,35 +548,35 @@ class node{
 				tree = new node();//實體化節點
 				tree->data = in;
 				tree->departnumber.push_back(in.id);
-				cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
+				//cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
 				tree->height = 1;
 				tree->left = tree->right = NULL;
 				return tree;
 			}
-
-			cout << "in depart is " << in.dname << "\t";
-			cout << tree->data.dname << " tree data depart"<< "\n";
+			
+			//cout << "in depart is " << in.dname << "\t";
+			//cout << tree->data.dname << " tree data depart"<< "\n";
 
 			if(in.department < tree->data.department){//新增資料小於時，指派至左子樹
-				cout << "insert to left\n";
+				//cout << "insert to left\n";
 				tree->left = insert(in, tree->left);
 			}
 			else if(in.department > tree->data.department){//新增資料大於時，指派至右子樹
-				cout << "insert to right\n";
+				//cout << "insert to right\n";
 				tree->right = insert(in, tree->right);
 			}
 			else{//新增資料等於時，表示科系相同，則紀錄序號
-				cout << "input is the same depart, which serial is " << in.id << "\n";
+				//cout << "input is the same depart, which serial is " << in.id << "\n";
 				tree->departnumber.push_back(in.id);
 				return tree;
 			}
 
 			//新增完後，更改parent的高度
 			tree->height = max(cheight(tree->left), cheight(tree->right)) + 1;
-			cout << "tree hight is " << tree->height << "\n";
+			//cout << "tree hight is " << tree->height << "\n";
 
 			int bf = BF(tree);
-			cout << "BF(tree) is " << bf << "\n";
+			//cout << "BF(tree) is " << bf << "\n";
 
 			if(bf > 1 && in.department < tree->left->data.department) return rr(tree);
 			if(bf < -1 && in.department > tree->right->data.department) return ll(tree);
@@ -590,7 +592,7 @@ int main(void) {
 	
 	DataInput input ;
 	TwoThreeTree TTtree ;
-	node* root = NULL;
+	node* root;
 
 	int command = 0;
 	do {
@@ -601,7 +603,7 @@ int main(void) {
 		cout << endl << "* 2. Build AVL tree *" ;
 		// cout << endl << "3. " ;
 		cout << endl << "*****************************";
-		cout << endl << "Input a command(0, 1, 2 ):" ;
+		cout << endl << "Input a command( 0, 1, 2 ):" ;
 		cin >> command; // get a command
 		switch (command) {
 			case 0:
@@ -612,13 +614,16 @@ int main(void) {
 				TTtree.Build( input.cSet ) ;
 				TTtree.Result( input.cSet ) ;
 				break ;
+
 			case 2:
 				input.InputFile() ;
-				root->Build(input.cSet, root);
-				cout << "next\n";
+				root = NULL;
+				root = root->Build(input.cSet, root);
 				root->Result(input.cSet, root);
+				//root->departnumber.clear();
+				//delete root;
 				break ;
-			 
+
 			default:
 				cout << endl << "Command does not exist!" << endl;
 		} // end switch
