@@ -119,38 +119,38 @@ int main(){
 
 node* insert(collegeType in, node* tree){
     if(tree == NULL){//當tree為空時，新增至root
-        tree = new node();
+        tree = new node();//實體化節點
         tree->data = in;
         tree->departnumber.push_back(in.number);
-        //cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
+        cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
         tree->height = 1;
         tree->left = tree->right = NULL;
         return tree;
     }
 
-    //cout << "in depart is " << in.department_number << "\t";
-    //cout << tree->data.department_number << " tree data depart"<< "\n";
+    cout << "in depart is " << in.department_number << "\t";
+    cout << tree->data.department_number << " tree data depart"<< "\n";
 
     if(in.department < tree->data.department){//新增資料小於時，指派至左子樹
-        //cout << "insert to left\n";
+        cout << "insert to left\n";
         tree->left = insert(in, tree->left);
     }
     else if(in.department > tree->data.department){//新增資料大於時，指派至右子樹
-        //cout << "insert to right\n";
+        cout << "insert to right\n";
         tree->right = insert(in, tree->right);
     }
     else{//新增資料等於時，表示科系相同，則紀錄序號
-        //cout << "input is the same depart, which serial is " << in.number << "\n";
+        cout << "input is the same depart, which serial is " << in.number << "\n";
         tree->departnumber.push_back(in.number);
         return tree;
     }
 
     //新增完後，更改parent的高度
     tree->height = max(height(tree->left), height(tree->right)) + 1;
-    //cout << "tree hight is " << tree->height << "\n";
+    cout << "tree hight is " << tree->height << "\n";
 
     int bf = BF(tree);
-    //cout << "BF(tree) is " << bf << "\n";
+    cout << "BF(tree) is " << bf << "\n";
 
     if(bf > 1 && in.department < tree->left->data.department) return rr(tree);
     if(bf < -1 && in.department > tree->right->data.department) return ll(tree);
