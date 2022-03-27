@@ -90,7 +90,7 @@ class DataInput {
 
 		} // get word from file
 		
-		void InputFile(){
+		bool InputFile(){
 			int skip = 0, num = 1 ;
 			string word ;
 			char number[3] = "\0" ;
@@ -106,6 +106,10 @@ class DataInput {
 			strcat(copy1,number) ;
 			strcat(copy1,copy2) ;
 			file.open (copy1,ios::in) ;
+			if(!file.is_open()){
+            	cout << "fail to open file, please restart\n";
+				return false;
+        	}
 			string temp ;
 			getline( file, buffer ) ;
 			getline( file, buffer ) ;
@@ -593,6 +597,7 @@ int main(void) {
 	DataInput input ;
 	TwoThreeTree TTtree ;
 	node* root;
+	bool status = true;
 
 	int command = 0;
 	do {
@@ -610,13 +615,13 @@ int main(void) {
 				break;
 
 			case 1:
-				input.InputFile() ;
+				status = input.InputFile() ;
 				TTtree.Build( input.cSet ) ;
 				TTtree.Result( input.cSet ) ;
 				break ;
 
 			case 2:
-				input.InputFile() ;
+				status = input.InputFile() ;
 				root = NULL;
 				root = root->Build(input.cSet, root);
 				root->Result(input.cSet, root);
@@ -627,7 +632,7 @@ int main(void) {
 			default:
 				cout << endl << "Command does not exist!" << endl;
 		} // end switch
-	} while (command != 0); // '0': stop the program
+	} while (command != 0 || status != true); // '0': stop the program, 'false': cant finf the file.
 	system("pause"); // pause the display
 	return 0;
 	
