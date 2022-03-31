@@ -13,6 +13,8 @@
 
 using namespace std ;
 
+int amount_avlnodes = 0;
+
 class collegeType {
 	public :
 		int id ; // int序號 
@@ -93,18 +95,19 @@ class DataInput {
 		bool InputFile(){
 			int skip = 0, num = 1 ;
 			string word ;
-			char number[3] = "\0" ;
-			char copy1[20] = "input" ;
-			char copy2[20] = ".txt" ;
+			string number = "\0" ;
+			string copy1 = "input" ;
+			string copy2 = ".txt" ;
 			string lb = "[" ;
 			string rb = "]" ;
 
 			string buffer ;
 			fstream file ;
 			cout << "input a file number:" ;
-			scanf("%s", &number) ;
-			strcat(copy1,number) ;
-			strcat(copy1,copy2) ;
+			cin >> number;
+			copy1 = copy1.append(number);
+			copy1 = copy1.append(copy2);
+			//cout << copy1 << "\n";
 			file.open (copy1,ios::in) ;
 			if(!file.is_open()){
             	cout << "fail to open file, please restart\n";
@@ -197,7 +200,7 @@ class DataInput {
 			// TwoThreeTree(cSet, deap) ;
 
 			// PrintOut( cSet ) ;
-
+			return true;
 		} // input and read file
 		
 		
@@ -469,6 +472,8 @@ class node{
 	public:
 		collegeType data;
 		vector<int> departnumber;//為相同科系後來加入的序號。
+		vector<int> departserial;//讀取相同科系的序號
+		vector<int> howmanynode;
 		int height;
 		struct node* left;
 		struct node* right;
@@ -482,7 +487,7 @@ class node{
 			else return cheight(x->left) - cheight(x->right);
 		}
 
-		node* rr(node* y){
+		node* ll(node* y){
 			//cout << "need rr\n";
 			node* x = y->left;
 			node* xr = x->right;
@@ -496,7 +501,7 @@ class node{
 			return x;
 		}
 
-		node* ll(node* x){
+		node* rr(node* x){
 			//cout << "need ll\n";
 			node* y = x->right;
 			node* xr = y->left;
@@ -512,14 +517,14 @@ class node{
 
 		node* rl(node* x){
 			//cout << "need rl\n";
-			x->right = rr(x->right);
-			return ll(x);
+			x->right = ll(x->right);
+			return rr(x);
 		}
 
 		node* lr(node* x){
 			//cout << "need lr\n";
-			x->left = ll(x->left);
-			return rr(x);
+			x->left = rr(x->left);
+			return ll(x);
 		}
 
 		void Result(vector<collegeType> input, node* root){
@@ -549,9 +554,11 @@ class node{
 
 		node* insert(collegeType in, node* tree){
 			if(tree == NULL){//當tree為空時，新增至root
+				amount_avlnodes++;
 				tree = new node();//實體化節點
 				tree->data = in;
 				tree->departnumber.push_back(in.id);
+
 				//cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
 				tree->height = 1;
 				tree->left = tree->right = NULL;
@@ -572,6 +579,7 @@ class node{
 			else{//新增資料等於時，表示科系相同，則紀錄序號
 				//cout << "input is the same depart, which serial is " << in.id << "\n";
 				tree->departnumber.push_back(in.id);
+				amount_avlnodes--;
 				return tree;
 			}
 
@@ -582,14 +590,35 @@ class node{
 			int bf = BF(tree);
 			//cout << "BF(tree) is " << bf << "\n";
 
-			if(bf > 1 && in.department < tree->left->data.department) return rr(tree);
-			if(bf < -1 && in.department > tree->right->data.department) return ll(tree);
+			if(bf > 1 && in.department < tree->left->data.department) return ll(tree);
+			if(bf < -1 && in.department > tree->right->data.department) return rr(tree);
 			if(bf > 1 && in.department > tree->left->data.department) return lr(tree);
 			if(bf < -1 && in.department < tree->right->data.department) return rl(tree);
 			return tree;
 		}
 	// put your code into here
-	
+
+		void Search(string departname, node* tree, vector<collegeType> input){
+			//cout << "depart input is " << departname << "\ntree depart name is " << tree->data.department << "\n";
+			if(departname == "*") return;
+			if(departname == tree->data.department){
+				for(int i = 0; i < tree->departnumber.size(); i++){
+					int vectorserial = tree->departnumber[i];
+					departserial.push_back(vectorserial - 1);
+					cout << "vectorserial = " << vectorserial - 1 << endl;
+					//cout << i + 1 << ":[" << vectorserial << "]" << input[vectorserial - 1].school;
+					//cout << "\t" << input[vectorserial - 1].department << "\t" << input[vectorserial - 1].dayclub;
+					//cout << "\t" << input[vectorserial - 1].level << "\t" << input[vectorserial - 1].sNO << "\n";
+				}
+				//return tree->departnumber;
+			}
+			if(departname < tree->data.department){
+				Search(departname, tree->left, input);
+			}
+			if(departname > tree->data.department){
+				Search(departname, tree->right, input);
+			}
+		}
 };
 
 int main(void) {
@@ -598,6 +627,7 @@ int main(void) {
 	TwoThreeTree TTtree ;
 	node* root;
 	bool status = true;
+	string departname;
 
 	int command = 0;
 	do {
@@ -608,7 +638,7 @@ int main(void) {
 		cout << endl << "* 2. Build AVL tree *" ;
 		// cout << endl << "3. " ;
 		cout << endl << "*****************************";
-		cout << endl << "Input a command( 0, 1, 2 ):" ;
+		cout << endl << "Input a command( 0, 1, 2, 3 ):" ;
 		cin >> command; // get a command
 		switch (command) {
 			case 0:
@@ -616,24 +646,53 @@ int main(void) {
 
 			case 1:
 				status = input.InputFile() ;
+				if(status == false) break;
 				TTtree.Build( input.cSet ) ;
 				TTtree.Result( input.cSet ) ;
 				break ;
 
 			case 2:
 				status = input.InputFile() ;
+				if(status == false) break;
+				root = NULL;
+				amount_avlnodes = 0;
+				root = root->Build(input.cSet, root);
+				cout << "name = \n";
+				cin >> departname;
+				//root->Result(input.cSet, root);
+				root->Search(departname, root, input.cSet);
+				cout << "size = " << root->departserial.size() << "\n";
+				cout << "AVL node amount is " << amount_avlnodes << endl;
+				break ;
+
+			/*case 3:
+				status = input.InputFile() ;
+				if(status == false) break;
+				//23
+
+				//AVL
 				root = NULL;
 				root = root->Build(input.cSet, root);
-				root->Result(input.cSet, root);
-				//root->departnumber.clear();
-				//delete root;
-				break ;
+				cout << "name = \n";
+				cin >> departname;
+				root->Search(departname, root, input.cSet);
+				cout << "size = " << root->departserial.size() << "\n";
+				//set
+				int setnumber = root->departserial.size();
+				vector<int> set;
+				//if(sizeof23 == 0) setnumber = root->departserial.size();
+				//if(root->departserial == 0) setnumber = sizeof23;
+				for(int i = 0; i < setnumber; i++){
+					
+				}
+				//print input.cSet[set[i]]
+				break;*/
 
 			default:
 				cout << endl << "Command does not exist!" << endl;
 		} // end switch
-	} while (command != 0 || status != true); // '0': stop the program, 'false': cant finf the file.
-	system("pause"); // pause the display
+	} while (command != 0); // '0': stop the program, 'false': cant finf the file.
+	//system("pause"); // pause the display
 	return 0;
 	
 } // end main
