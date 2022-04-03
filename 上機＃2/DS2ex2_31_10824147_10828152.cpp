@@ -584,7 +584,7 @@ class node{
 		}
 
 		node* ll(node* y){
-			//cout << "need rr\n";
+			cout << "need ll\n";
 			node* x = y->left;
 			node* xr = x->right;
 
@@ -598,7 +598,7 @@ class node{
 		}
 
 		node* rr(node* x){
-			//cout << "need ll\n";
+			cout << "need rr\n";
 			node* y = x->right;
 			node* xr = y->left;
 
@@ -649,41 +649,42 @@ class node{
 		} // Build 將資料一筆筆放入
 
 		node* insert(collegeType in, node* tree){
+			cout << "in depart is " << in.department << "\t";
+			
 			if(tree == NULL){//當tree為空時，新增至root
 				amount_avlnodes++;
 				tree = new node();//實體化節點
 				tree->data = in;
 				tree->departnumber.push_back(in.id);
 
-				//cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
+				cout << "tree is null, serial is " << tree->departnumber[0] << "\n";
 				tree->height = 1;
 				tree->left = tree->right = NULL;
 				return tree;
 			}
 			
-			//cout << "in depart is " << in.dname << "\t";
 			//cout << tree->data.dname << " tree data depart"<< "\n";
 
 			if(in.department < tree->data.department){//新增資料小於時，指派至左子樹
-				//cout << "insert to left\n";
+				cout << "insert to left\n";
 				tree->left = insert(in, tree->left);
 			}
 			else if(in.department > tree->data.department){//新增資料大於時，指派至右子樹
-				//cout << "insert to right\n";
+				cout << "insert to right\n";
 				tree->right = insert(in, tree->right);
 			}
 			else{//新增資料等於時，表示科系相同，則紀錄序號
-				//cout << "input is the same depart, which serial is " << in.id << "\n";
+				cout << "input is the same depart, which serial is " << in.id << "\n";
 				tree->departnumber.push_back(in.id);
 				return tree;
 			}
 
 			//新增完後，更改parent的高度
 			tree->height = max(cheight(tree->left), cheight(tree->right)) + 1;
-			//cout << "tree hight is " << tree->height << "\n";
+			cout << "tree hight is " << tree->height << "\n";
 
 			int bf = BF(tree);
-			//cout << "BF(tree) is " << bf << "\n";
+			cout << "BF(tree) is " << bf << "\n";
 
 			if(bf > 1 && in.department < tree->left->data.department) return ll(tree);
 			if(bf < -1 && in.department > tree->right->data.department) return rr(tree);
