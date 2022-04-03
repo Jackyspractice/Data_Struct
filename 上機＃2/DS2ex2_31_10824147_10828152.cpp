@@ -17,7 +17,7 @@ int amount_avlnodes = 0;
 
 class collegeType {
 	public :
-		int id ; // int序號 
+		int id ; // int序號
 		string number ; // 括號序號
 		string scname ; // 學校代碼
 		string school ; // college name 學校名稱
@@ -35,11 +35,11 @@ class collegeType {
 struct NodeData {
 	int num ; // 序號
 	string SchoolName ; // 學校名稱
-	vector<NodeData> SameName ; // 放一樣校名的資料 
+	vector<NodeData> SameName ; // 放一樣校名的資料
 };
 
 struct Node {
-	vector<NodeData> SchoolData ; // 由小到大排 
+	vector<NodeData> SchoolData ; // 由小到大排
 	Node *parent ;
 	Node *LChild ;
 	Node *MChild ;
@@ -50,17 +50,20 @@ typedef Node * NodePtr ;
 
 class DataInput {
 	public:
-		
+
 		vector<collegeType> cSet ;
+
 		
-		/* 
 		void PrintOut(vector<collegeType> data){
 			for( int i = 0; i < data.size(); i++ ){
-				cout << data[i].id << data[i].school << data[i].sNO << endl ; 
+				cout << (i+1) << ":[" << (i+1) << "]" 
+				<< data[i].school << " " << data[i].dname 
+				<< " " << data[i].dayclub << " " << data[i].level 
+				<< " " << data[i].sNO << endl ;
 			}
 		}
-		*/ 
 		
+
 		string GetWord( string buffer, string &word, int &skip ) {
 
 			string temp = "	" ;
@@ -91,8 +94,8 @@ class DataInput {
 			return word ;
 
 		} // get word from file
-		
-		bool InputFile(){
+
+		bool InputFile() {
 			int skip = 0, num = 1 ;
 			string word ;
 			string number = "\0" ;
@@ -109,10 +112,10 @@ class DataInput {
 			copy1 = copy1.append(copy2);
 			//cout << copy1 << "\n";
 			file.open (copy1,ios::in) ;
-			if(!file.is_open()){
-            	cout << "fail to open file, please restart\n";
+			if(!file.is_open()) {
+				cout << "fail to open file, please restart\n";
 				return false;
-        	}
+			}
 			string temp ;
 			getline( file, buffer ) ;
 			getline( file, buffer ) ;
@@ -120,12 +123,12 @@ class DataInput {
 			getline( file, buffer ) ;
 			// vector<collegeType> cSet;
 			//
-            cSet.clear() ;
+			cSet.clear() ;
 
 			collegeType data ;
 			while( !file.eof() ) {
 				data.id = num ; // id
-				
+
 				string sNum(std::to_string(num)) ; //
 				string Snum = lb + sNum + rb ;
 				data.number = Snum ; // 序號
@@ -202,130 +205,143 @@ class DataInput {
 			// PrintOut( cSet ) ;
 			return true;
 		} // input and read file
-		
-		
-		
+
+    
 }; // DataInput
 
-class TwoThreeTree{
-		
+class TwoThreeTree {
+
 	public:
-		NodePtr head;
-		
-		void Build( vector<collegeType>data ) {
-		    NodeData temp ;
-			temp.num = data[0].id ;
-			temp.SchoolName = data[0].school ;
+		NodePtr head ;
+		vector<int>where ;
 
-			head = NULL;
-			head = new Node;
-			head -> SchoolData.push_back( temp ) ;
-			head -> parent = NULL;
-			head -> LChild = head -> MChild = head -> RChild = NULL;
-
-			for ( int i = 1; i < data.size() ; i++ ) {
-				temp.num = data[i].id ;
-				temp.SchoolName = data[i].school ;
-				Insert( temp ) ;
-				// cout << "fffff" ;
-			} 
-			
-		} // Build 將資料一筆筆放入 
-		
-		void Rearrange( NodePtr cur, NodePtr big , NodePtr temp ) { // 目前node, name最大的node, 分裂後的parent 
-			NodePtr curParent = cur -> parent;
-			string curParentPName = curParent -> parent -> SchoolData[0].SchoolName; // curParent的parent的schoolanme 
-
-			if ( big -> SchoolData[0].SchoolName > curParentPName ) { // big在temp層 
-				if ( big -> SchoolData[0].SchoolName > temp -> SchoolData[0].SchoolName ) {
-					temp -> RChild = big ;
-					big -> parent = temp ;
-					temp -> LChild = curParent -> RChild ;
-				} // 確認big的校名大於祖父節點後 調整big位置 
-
-				else {
-					temp -> LChild = big ;
-					big -> parent = temp ;
-					temp -> RChild = curParent -> RChild;
-				} // 
-
-				curParent -> RChild -> parent = temp ;
-				curParent -> RChild = curParent -> MChild;
-				curParent -> MChild = NULL;
-			} 
-
-			else { // big在curParent
-				temp -> RChild = curParent -> RChild ;
-				temp -> LChild = curParent -> MChild ;
-				curParent -> RChild -> parent = curParent -> MChild -> parent = temp;
-				curParent -> RChild = big ;
-				big -> parent = curParent ;
-				curParent -> MChild = NULL ;
-			} 
-			
-		} // Rearrange
-		
-		NodePtr Split( NodePtr cur ) { // 分裂 
+		NodePtr Split( NodePtr cur ) { // 分裂
 			NodePtr Big = new Node;
-			Big -> SchoolData.push_back( cur -> SchoolData[2] ); // 最大
-			cur -> SchoolData.pop_back();
 			Big -> LChild = Big -> MChild = Big -> RChild = NULL;
+			Big -> SchoolData.push_back( cur -> SchoolData[2] ); // 最大
+
+			cur -> SchoolData.pop_back();
 
 			if ( cur == head ) { // root
 				NodePtr promoted = new Node;
-				promoted -> SchoolData.push_back( cur -> SchoolData[1] ) ; // 將第二大promote 
+				promoted -> SchoolData.push_back( cur -> SchoolData[1] ) ; // 將第二大promote
 				cur -> SchoolData.pop_back();
 				promoted -> parent = NULL ;
 				promoted -> LChild = cur ;
 				promoted -> MChild = NULL ;
 				promoted -> RChild = Big ;
-				cur -> parent = Big -> parent = promoted ;
+				cur -> parent = promoted ;
+				Big -> parent = promoted ;
 				head = promoted ;
 
-			} 
+			}
 
 			else { // 非root
 				NodePtr curParent = cur -> parent ;
-				InsertPosition( curParent, cur -> SchoolData[1] ) ; // 第二大放進parent 
+
+				InsertPosition( cur -> SchoolData[1], curParent ) ; // 第二大放進parent
 				cur -> SchoolData.pop_back() ;
 
 				if ( curParent -> SchoolData.size() == 2 ) { // parent的schooldata沒有滿
 					if ( cur == curParent -> RChild ) { // 調整big位置
 						curParent -> MChild = cur ;
 						curParent -> RChild = Big ;
-					} // 
+					} //
 
 					else
-						curParent -> MChild = Big ; // 只有big 
+						curParent -> MChild = Big ; // 只有big
 					Big -> parent = curParent ;
-				} 
+				}
 
-				else { // parent的schooldata滿了 再次分裂Parent 
+				else { // parent的schooldata滿了 再次分裂Parent
 					NodePtr temp = Split( curParent ) ;
 					Rearrange( cur, Big, temp ) ; //
-				} 
-				
+				}
+
 			} // else
 
 			return Big ;
-			
+
 		} // split()
-		
-		void Insert( NodeData data ){
+
+		void InsertNode( NodeData data ) {
 			NodePtr cur = head ;
-			
-			if ( !IsSame( cur, data ) ) { // not same
+
+			if ( !IsThereSame( cur, data ) ) { // not same
+
 				cur = head ;
-				cur = FindPosition( data.SchoolName ) ;   
-				InsertPosition( cur, data ) ;
+				cur = FindPosition( data.SchoolName ) ;
+				InsertPosition( data, cur ) ; //
 				if ( cur -> SchoolData.size() == 3 ) {
 					Split( cur ) ;
-				} 
-			} 
-			
-		} // Insert 
-	
-	    NodePtr FindPosition( string schoolname ) {
+				}
+			} else // same
+				;
+
+		} // InsertNode
+
+		void Build( vector<collegeType>data ) {
+			NodeData node ;
+			node.num = data[0].id ;
+			node.SchoolName = data[0].school ; // first
+
+			head = NULL;
+			head = new Node;
+			head -> SchoolData.push_back( node ) ;
+			head -> parent = NULL;
+			head -> LChild = head -> MChild = head -> RChild = NULL;
+
+			for ( int i = 1; i < data.size() ; i++ ) {
+				node.num = data[i].id ;
+				node.SchoolName = data[i].school ;
+				InsertNode( node ) ;
+				// cout << "fffff" ;
+			}
+
+		} // Build 將資料一筆筆放入
+
+		bool BiggerThanRight( string left, string right ) {
+			if( left > right )
+				return true ;
+			else
+				return false ;
+		} // bool check if left string is bigger than right stirng
+
+		void Rearrange( NodePtr cur, NodePtr big , NodePtr temp ) { // 目前node, name最大的node, 分裂後的parent
+			NodePtr curParent = cur -> parent;
+			string curParentPName = curParent -> parent -> SchoolData[0].SchoolName; // curParent的parent的schoolanme
+
+			if ( BiggerThanRight( big -> SchoolData[0].SchoolName, curParentPName ) ) { // big在temp層
+				if ( BiggerThanRight( big -> SchoolData[0].SchoolName, temp -> SchoolData[0].SchoolName ) ) {
+					temp -> RChild = big ;
+					big -> parent = temp ;
+					temp -> LChild = curParent -> RChild ;
+				} // 確認big的校名大於祖父節點後 調整big位置
+
+				else {
+					temp -> LChild = big ;
+					big -> parent = temp ;
+					temp -> RChild = curParent -> RChild;
+				} //
+
+				curParent -> RChild -> parent = temp ;
+				curParent -> RChild = curParent -> MChild;
+				curParent -> MChild = NULL;
+			}
+
+			else { // big在curParent
+				temp -> LChild = curParent -> MChild ;
+				temp -> RChild = curParent -> RChild ;
+
+				curParent -> RChild -> parent = curParent -> MChild -> parent = temp;
+				curParent -> RChild = big ;
+				big -> parent = curParent ;
+				curParent -> MChild = NULL ;
+			}
+
+		} // Rearrange
+
+		NodePtr FindPosition( string schoolname ) {
 			NodePtr cur = head ;
 			NodePtr position ;
 
@@ -333,87 +349,88 @@ class TwoThreeTree{
 				position = cur ;
 
 				if ( cur -> SchoolData.size() == 1 ) { // node中的school data只有一個
-					if ( cur -> SchoolData[0].SchoolName > schoolname ) // 原本的較大
+					if ( BiggerThanRight( cur -> SchoolData[0].SchoolName, schoolname ) ) // 原本的較大
 						cur = cur -> LChild ;
 					else
 						cur = cur -> RChild ;
 				} //
 
 				else { // 有兩個
-					if ( cur -> SchoolData[0].SchoolName > schoolname )
+					if ( BiggerThanRight( cur -> SchoolData[0].SchoolName, schoolname ) )
 						cur = cur -> LChild ;
-					else if ( cur -> SchoolData[1].SchoolName < schoolname )
+					else if ( BiggerThanRight( schoolname, cur -> SchoolData[1].SchoolName ) )
 						cur = cur -> RChild ;
 					else
 						cur = cur -> MChild ;
-				} 
+				}
 			}    //
 
 			return position ;
-			
-		} // FindPosition  找出插入位置 
-		
-		bool IsSame( NodePtr cur, NodeData data ) { // 找校名一樣的
+
+		} // FindPosition  找出插入位置
+
+		bool IsThereSame( NodePtr cur, NodeData data ) { // 找校名一樣的
 			if ( cur == NULL ) { // no
-				return false;
+				return false ;
 			} //
 
 			else {
-				for ( int i = 0; i < cur -> SchoolData.size() ; i++ ) { // 找在這個node中有沒有一樣的校名 
-					if ( cur -> SchoolData[i].SchoolName == data.SchoolName ) { 
-						cur -> SchoolData[i].SameName.push_back( data );
-						return true;
-					} 
-				} 
 
-				if ( IsSame( cur -> LChild, data ) ) // 找left child 
+				for ( int i = 0; i < cur -> SchoolData.size() ; i++ ) { // 找在這個node中有沒有一樣的校名
+					if ( cur -> SchoolData[i].SchoolName == data.SchoolName )
+						return true;
+
+				}
+
+
+				if ( IsThereSame( cur -> LChild, data ) ) // 找left child 名稱是否一樣
 					return true ;
-				else if ( IsSame( cur -> MChild, data ) ) // 找middle child 
+				else if ( IsThereSame( cur -> MChild, data ) ) // 找middle child
 					return true ;
-				else if ( IsSame( cur -> RChild, data ) ) // 找right child 
+				else if ( IsThereSame( cur -> RChild, data ) ) // 找right child
 					return true ;
 				else
 					return false ; // 目前沒有一樣的
-			} 
-			
-		} // IsSame
-	    
-        void InsertPosition( NodePtr cur, NodeData data ) { // 
-			bool finish = false;
+			}
 
-			for ( int i = 0; i < cur -> SchoolData.size() && !finish ; i++ ) {
-				if( data.SchoolName < cur -> SchoolData[i].SchoolName ) {
+		} // IsThereSame
+
+		void InsertPosition( NodeData data, NodePtr cur ) { //
+
+
+			for ( int i = 0; i < cur -> SchoolData.size() ; i++ ) {
+				if( BiggerThanRight( cur -> SchoolData[i].SchoolName, data.SchoolName ) ) {
 					cur -> SchoolData.insert( cur -> SchoolData.begin()+i, data ) ;
-					finish = true;
-				} 
+					i = cur -> SchoolData.size() ; //
+				}
 
-				else if ( data.SchoolName > cur -> SchoolData[i].SchoolName ) {
+				else if ( BiggerThanRight( data.SchoolName, cur -> SchoolData[i].SchoolName ) ) {
 					if ( i == cur -> SchoolData.size() - 1  ) {
 						cur -> SchoolData.push_back( data ) ;
-						finish = true;
-					} 
+						i = cur -> SchoolData.size() ; //
+					}
 				} //
-			} 
-			
-		} // InsertPosition 插入並決定node中資料的大中小位置 
-	    
-	    int Height(){
-	    	
-	    	int h = 0 ;
-	    	NodePtr cur = head ;
+			}
+
+		} // InsertPosition 插入並決定node中資料的大中小位置
+
+		int Height() {
+
+			int h = 0 ;
+			NodePtr cur = head ;
 
 			for( ; cur != NULL ; cur = cur -> LChild )
 				h ++ ;
-				
+
 			return h ;
-		} // 計算樹高 
-		
-		
-		void FindAndPrint( string name, vector<collegeType>data, int &num ){
+		} // 計算樹高
+
+
+		void FindAndPrint( string name, vector<collegeType>data, int &num ) {
 			// int num = 1 ;
-			
-			for( int i = 0 ; i < data.size(); i++ ){
-				if( data[i].school == name ){
+
+			for( int i = 0 ; i < data.size(); i++ ) {
+				if( data[i].school == name ) {
 					cout << num << ":" ;
 					cout << "[" << data[i].id << "]" ;
 					cout << data[i].school << " " ;
@@ -424,8 +441,8 @@ class TwoThreeTree{
 					num++ ;
 				}
 			}
-		} // FindAndPrint 找出該校名在vector中之資料並依序印出 
-		
+		} // FindAndPrint 找出該校名在vector中之資料並依序印出
+
 		/*
 		int SizeOfData( string name, vector<collegeType> data ){
 			int i = 0 ;
@@ -434,25 +451,24 @@ class TwoThreeTree{
 				    i++ ;
 			    }
 			}
-			
+
 			return i ;
-		} // 
+		} //
 		*/
-		
-		void Result( vector<collegeType> data ){
+
+		void Result( vector<collegeType> data ) {
 			NodePtr cur = head ;
 			int num = 1, j = 1 ;
-			
+
 			// cout << "ffffff" ;
 			int Treeh = Height() ;
 			cout << "Tree Height : " << Treeh << endl ;
-			
-			if( head -> SchoolData.size() == 1 ){
+
+			if( head -> SchoolData.size() == 1 ) {
 				string name = head -> SchoolData[0].SchoolName ;
-				
+
 				FindAndPrint( name, data, num ) ;
-			}
-			else{
+			} else {
 				// int size1 = SizeOfData( head -> SchoolData[0].SchoolName, data ) ;
 				// int size2 = SizeOfData( head -> SchoolData[1].SchoolName, data ) ;
 				// int all = size1 + size2 ;
@@ -460,11 +476,92 @@ class TwoThreeTree{
 				// num = size1 ;
 				FindAndPrint( head -> SchoolData[0].SchoolName, data, num ) ; // ?
 			}
-			    
+
 			// data.clear() ;
+
+		} // 23tree輸出結果
+
+		bool Finish() {
+
+			if( head != NULL ) {
+				return true ;
+			} else
+				return false ;
+		}
+
+		int FindID( NodePtr find, string schoolname, vector<collegeType> data ) {
+			for( int i = 0 ; i < data.size(); i++ ) {
+				if( find -> SchoolData[i].SchoolName == schoolname ) {
+					return i ;
+				}
+			}
+		}
+		
+		void mission3StarPrint( string schoolname, vector<collegeType> data ) {
+			int t = 1;
+			for ( int i = 0 ; i < data.size(); i++ ) {
+				if ( schoolname == data[i].school ) {
+					cout << t << ": [" << data[i].id << "] " << data[i].school << " " << data[i].department << " " << data[i].dayclub << " " << data[i].level << " " << data[i].sNO << endl;
+					t++ ;
+				} // if
+			} 
+		} // 
+		
+		void findwhere( string schoolname, vector<collegeType> data ){
+			for( int i = 0; i < data.size(); i++ ){
+				if( schoolname == data[i].school ){
+					where.push_back( data[i].id ) ;
+				}
+			}
+		}
+
+        /*
+		void ( string schoolname, vector<collegeType> data, int num ) {
+			NodePtr find = head ;
+
+			NodeData node ;
+			int id ;
+			for( int i = 0; i < find -> SchoolData.size(); i++ ){
+				while( schoolname != find -> SchoolData[i].SchoolName ){
+				    
+					if( schoolname < find -> SchoolData[0] ){
+						find = find -> LChild ;
+					}
+					else if( schoolname > find -> SchoolData[1] ){
+				    	find = find -> RChild ;
+					}
+					else
+					    find = find -> MChild ;
+		    	}
+			}
 			
-		} // 23tree輸出結果 
-	    
+
+            
+			id = FindID( find, schoolname, data ) ;
+
+			node.num = id ;
+			node.SchoolName = schoolname ; //
+
+			// cout << "ffff" << endl ;
+			if ( IsThereSame( find, node ) ) { // same
+
+				find = head ;
+				find = FindPosition( schoolname ) ;
+				// while( find -> SchoolData[] ){
+
+				// }
+				// cout << "ffff" << endl ;
+				for( int i = 0; i < find -> SchoolData.size(); i++ ) {
+					if( find -> SchoolData[i].SchoolName == schoolname ) {
+						// cout << " 123" << endl ;
+					}
+				}
+
+			}
+			
+
+		}*/
+
 };
 
 class node{ 
@@ -473,7 +570,6 @@ class node{
 		collegeType data;
 		vector<int> departnumber;//為相同科系後來加入的序號。
 		vector<int> departserial;//讀取相同科系的序號
-		vector<int> howmanynode;
 		int height;
 		struct node* left;
 		struct node* right;
@@ -579,7 +675,6 @@ class node{
 			else{//新增資料等於時，表示科系相同，則紀錄序號
 				//cout << "input is the same depart, which serial is " << in.id << "\n";
 				tree->departnumber.push_back(in.id);
-				amount_avlnodes--;
 				return tree;
 			}
 
@@ -602,29 +697,118 @@ class node{
 			//cout << "depart input is " << departname << "\ntree depart name is " << tree->data.department << "\n";
 			if(departname == "*") return;
 			if(departname == tree->data.department){
+				//cout << "departname == tree->data.department\n";
 				for(int i = 0; i < tree->departnumber.size(); i++){
 					int vectorserial = tree->departnumber[i];
 					departserial.push_back(vectorserial - 1);
-					cout << "vectorserial = " << vectorserial - 1 << endl;
+					//cout << "vectorserial = " << vectorserial - 1 << endl;
 					//cout << i + 1 << ":[" << vectorserial << "]" << input[vectorserial - 1].school;
 					//cout << "\t" << input[vectorserial - 1].department << "\t" << input[vectorserial - 1].dayclub;
 					//cout << "\t" << input[vectorserial - 1].level << "\t" << input[vectorserial - 1].sNO << "\n";
 				}
-				//return tree->departnumber;
+				return;
 			}
 			if(departname < tree->data.department){
+				if(tree->left == NULL){
+					cout << "no this department here\n";
+					return;
+				}
 				Search(departname, tree->left, input);
 			}
 			if(departname > tree->data.department){
+				if(tree->right == NULL){
+					cout << "no this department here\n";
+					return;
+				}
 				Search(departname, tree->right, input);
 			}
 		}
 };
 
+class Find {
+
+		string SchoolName ;
+		string Department ;
+
+		TwoThreeTree TTTree ;
+		DataInput input ;
+		bool status ;
+	public:
+
+		void Input( vector<collegeType> data, node* root ) {
+
+			// status = input.InputFile() ;
+
+			cout << "Enter a college name to search[*]: " << endl ;
+			cin >> SchoolName ;
+			cout << "Enter a department name to search[*]: " << endl ;
+			cin >> Department ;
+
+			Search( SchoolName, Department, data, root ) ;
+		}
+
+		void set(vector<collegeType> data, vector<int> avl, vector<int> two){
+			int t = 1;
+			for(int i = 0; i < avl.size(); i++){
+				for(int j = 0; j < two.size(); j++){
+					if(avl[i] == two[j] - 1){
+						cout << t++ << ": [" << data[avl[i]].id << "] " << data[avl[i]].school << " " << data[avl[i]].department << " " << data[avl[i]].dayclub << " " << data[avl[i]].level << " " << data[avl[i]].sNO << endl;
+					}
+				}
+			}
+		}
+
+		void Search( string schoolname, string department, vector<collegeType> data, node* root ) {
+			//
+			// cout << schoolname << department ;
+			if( schoolname == "*" && department == "*" ){
+				input.PrintOut( data ) ;
+			}
+			else if( schoolname != "*" && department == "*" ) {
+				TTTree.mission3StarPrint( schoolname, data ) ;
+			}
+			
+			else if( schoolname == "*" && department != "*" ) {
+			    // avl
+				root->Search(department, root, input.cSet);
+				cout << "department size = " << root->departserial.size() << "\n";
+				int t = 1;
+				for(int i = 0; i < root->departserial.size(); i++){
+					int x = root->departserial[i];
+					cout << t++ << ": [" << data[x].id << "] " << data[x].school << " " << data[x].department << " " << data[x].dayclub << " " << data[x].level << " " << data[x].sNO << endl;
+				}
+				
+			}
+			else{
+
+				TTTree.findwhere( schoolname, data ) ; // 23tree中的vector:where即為該校名id之陣列 
+				cout << "school size = " << TTTree.where.size() << "\n";
+				/*for( int i = 0; i < TTTree.where.size(); i++ ){
+					cout << TTTree.where[i] << endl ;
+				}*/
+
+				root->Search(department, root, input.cSet);
+				cout << "department size = " << root->departserial.size() << "\n";
+				/*for(int i = 0; i < root->departserial.size(); i++){
+					cout << root->departserial[i] << endl;
+				}*/
+
+				//set
+				set(data, root->departserial, TTTree.where);
+				root->departserial.clear();
+				TTTree.where.clear();
+				
+			}
+		}
+
+
+};
+
 int main(void) {
-	
+
 	DataInput input ;
 	TwoThreeTree TTtree ;
+	Find find ;
 	node* root;
 	bool status = true;
 	string departname;
@@ -636,9 +820,10 @@ int main(void) {
 		cout << endl << "* 0. QUIT *";
 		cout << endl << "* 1. Build 2-3 tree *";
 		cout << endl << "* 2. Build AVL tree *" ;
-		// cout << endl << "3. " ;
+		cout << endl << "* 3. Intersection query *" ;
 		cout << endl << "*****************************";
 		cout << endl << "Input a command( 0, 1, 2, 3 ):" ;
+		// cout << "fffff" ;
 		cin >> command; // get a command
 		switch (command) {
 			case 0:
@@ -657,42 +842,30 @@ int main(void) {
 				root = NULL;
 				amount_avlnodes = 0;
 				root = root->Build(input.cSet, root);
-				cout << "name = \n";
-				cin >> departname;
-				//root->Result(input.cSet, root);
-				root->Search(departname, root, input.cSet);
-				cout << "size = " << root->departserial.size() << "\n";
+				root->Result(input.cSet, root);
 				cout << "AVL node amount is " << amount_avlnodes << endl;
+				root->departserial.clear();
 				break ;
 
-			/*case 3:
-				status = input.InputFile() ;
-				if(status == false) break;
-				//23
+			case 3:
 
-				//AVL
-				root = NULL;
-				root = root->Build(input.cSet, root);
-				cout << "name = \n";
-				cin >> departname;
-				root->Search(departname, root, input.cSet);
-				cout << "size = " << root->departserial.size() << "\n";
-				//set
-				int setnumber = root->departserial.size();
-				vector<int> set;
-				//if(sizeof23 == 0) setnumber = root->departserial.size();
-				//if(root->departserial == 0) setnumber = sizeof23;
-				for(int i = 0; i < setnumber; i++){
-					
+                if( input.cSet.empty() ){
+                	cout << "choose 1 first!" << endl ;
+				} 
+				else{
+				    status = input.InputFile() ;
+			    	if( status == false ) break ;
+					root = NULL;
+					root = root->Build(input.cSet, root);
+		    		find.Input( input.cSet, root) ;
 				}
-				//print input.cSet[set[i]]
-				break;*/
+				break ;
 
 			default:
 				cout << endl << "Command does not exist!" << endl;
 		} // end switch
 	} while (command != 0); // '0': stop the program, 'false': cant finf the file.
-	//system("pause"); // pause the display
+	system("pause"); // pause the display
 	return 0;
-	
+
 } // end main
