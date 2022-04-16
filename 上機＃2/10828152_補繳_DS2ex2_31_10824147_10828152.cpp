@@ -167,9 +167,7 @@ class DataInput {
 			if( buffer != "\0" ) {
 				string sNum(std::to_string(num)) ;
 				string Snum = lb + sNum + rb ;
-
 				data.number = Snum ; // §Ç¸¹
-
 				GetWord( buffer, word, skip ) ;
 				data.scname = word ;
 				word.clear() ;
