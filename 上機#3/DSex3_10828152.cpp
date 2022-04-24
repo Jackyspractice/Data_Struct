@@ -1,4 +1,4 @@
-//10828152 電機三甲 張泓傑
+//10828152 ?��?三甲 張�???
 #include <iostream>
 #include <string>
 #include <vector>
@@ -72,13 +72,13 @@ class DataInput{
             vector<string> buffer_split;
             buffer_split.clear();
             string line;
+	int data_size = 0;
 
             while(!file.eof()){
                 getline(file, line, '\n');
-
-                
-                split(buffer, line, '\t');
-
+	data_size++;
+                if (line != "\0") split(buffer, line, '\t');
+		else data_size--;
                 for(int i = 0; i < 9; i++){
                     buffer_split.push_back(buffer[i]);
                     //cout << "buffer size = " << buffer.size() << endl;
@@ -91,7 +91,7 @@ class DataInput{
 
             
             
-            for(int i = 0; i < buffer_split.size() / 9; i++){
+            for(int i = 0; i < data_size ; i++){
                 store(i, buffer_split);
             }
             
