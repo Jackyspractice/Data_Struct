@@ -4,14 +4,8 @@
 using namespace std;
 
 int main(){
-	string a = "abc	bac	cab";
-	string n[3] = {"\0"};
-	int k = 0;
-	for(int i = 0; i < a.size(); i++){
-		if(a[i] != '\t'){
-			n[k] = n[k] + a[i];
-		}
-		else k++;
-	}
-	cout << n[2];
+	int size = 1;
+	int *arr = new int[size];
+	size = 10;
+	cout << sizeof(arr)/sizeof(arr[0]);
 }

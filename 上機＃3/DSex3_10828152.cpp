@@ -193,6 +193,8 @@ class DH_table{
 class DoubleHashing{
     public:
         vector<collegeType> data;
+        int table_size = 0;
+        DH_table *table = new DH_table [table_size];
 
         int is_prime(int a){
             if (a == 1) return 0;
@@ -219,11 +221,47 @@ class DoubleHashing{
             return ans;
         }
 
-        void bulid_hash_table(){
-            int table_size = find_prime(data.size());
-            //cout << "table_size = " << table_size << "\n";
-            
+        void build_table(){
+            table_size = find_prime(data.size());
+            DH_table *table = new DH_table [table_size];
         }
+
+        int hash_function1(char *id){
+            int sum = 1;
+            for (int i = 0; i < 10; i++){
+                if (id[i] >= '0' && id[i] <= '9'){
+                    sum *= id[i];
+                    if (sum >= table_size){
+                        sum = sum % table_size;
+                    }
+                }
+            }
+            return sum;
+        }
+
+        int hash_function2(){
+
+        }
+
+        void hash_insert(){
+            build_table();
+            int start = 0;
+            int step = 0;
+            for (int i = 0; i < data.size(); i++){
+                start = hash_function1(data[i].sid);
+                cout << i << " start = " << start << endl;
+                step = hash_function2();
+            }
+        }
+
+        void search(){
+
+        }
+
+        void write_to_file(){
+
+        }
+
 };
 
 int main() {
@@ -251,7 +289,8 @@ int main() {
                 if (type == false)  continue;
                 input.print_cSet();
                 DH.data = input.cSet;
-                DH.bulid_hash_table();
+                DH.hash_insert();
+                
 
 
                 break;
