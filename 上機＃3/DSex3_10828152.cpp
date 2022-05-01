@@ -3,6 +3,7 @@
 #include <string.h>
 #include <vector>
 #include <fstream>
+#include <iomanip> //setw()
 using namespace std;
 
 class collegeType{
@@ -14,10 +15,11 @@ class collegeType{
         float avg; //4byte
 };
 
+string filenumber;
+
 class DataInput{
     public:
         vector<collegeType> cSet;
-        string filenumber;
         int data_size = 0;
 
         void store_char(char *to, string in){
@@ -184,7 +186,7 @@ class DataInput{
 
 class DH_table{
     public:
-        int hash_value = 0;
+        int hash_value = -1;
         char sid[10] = {'\0'};
         char sname[10] = {'\0'};
         float avg = 0;
@@ -197,7 +199,6 @@ class DoubleHashing{
         int table_size = 0;
         vector<DH_table> table;
         
-
         int is_prime(int a){
             if (a == 1) return 0;
             else{
@@ -321,7 +322,36 @@ class DoubleHashing{
 
         }
 
+
         void write_to_file(){
+            ofstream file;
+            string filename = "double" + filenumber + ".txt";
+            file.open(filename);
+
+            file << " --- Hash Table Y --- (double hashing)\n";
+
+            for (int i = 0; i < table.size(); i++){
+                
+
+                if (table[i].hash_value == -1){
+                    
+                    file << "[" << setw(3) << right << i << "]\n";
+                    
+                }
+                else{
+                    file << "[" << setw(3) << right << i << "]\t";
+
+                    file << table[i].hash_value << "\t";
+                    file << setw(10) << right << table[i].sid << "\t";
+                    file << setw(10) << right << table[i].sname << "\t";
+                    file << setw(5) << right << table[i].avg << "\n";
+                    
+                }
+                
+            }
+
+            file.close();
+            table.clear();
 
         }
 
@@ -348,12 +378,13 @@ int main() {
                 break;
 
             case 2:
+
                 type = input.read_binary();
                 if (type == false)  continue;
-                input.print_cSet();
+
                 DH.data = input.cSet;
                 DH.hash_insert();
-                
+                DH.write_to_file();
 
 
                 break;
