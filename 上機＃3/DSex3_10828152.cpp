@@ -184,17 +184,19 @@ class DataInput{
 
 class DH_table{
     public:
-        int hash_value;
+        int hash_value = 0;
         char sid[10] = {'\0'};
         char sname[10] = {'\0'};
-        float avg;
+        float avg = 0;
+        int flag = 0;//紀錄空間內有無資料
 };
 
 class DoubleHashing{
     public:
         vector<collegeType> data;
         int table_size = 0;
-        DH_table *table = new DH_table [table_size];
+        vector<DH_table> table;
+        
 
         int is_prime(int a){
             if (a == 1) return 0;
@@ -207,7 +209,7 @@ class DoubleHashing{
         }
 
         int find_prime(int data_size){
-            int max = int(data_size * 1.2) + 1;
+            int max = data_size + 1;
             int ans = 0;
             
             while(1){
@@ -222,8 +224,14 @@ class DoubleHashing{
         }
 
         void build_table(){
-            table_size = find_prime(data.size());
-            DH_table *table = new DH_table [table_size];
+            DH_table null_data;
+            int max = int(data.size() * 1.2) + 1;
+            table_size = find_prime(max);
+            cout << "table size = " << table_size << endl;
+            for(int i = 0; i < table_size; i++){
+                table.push_back(null_data);
+            }
+            cout << "table actual size = " << table.size() << endl;
         }
 
         int hash_function1(char *id){
@@ -239,7 +247,49 @@ class DoubleHashing{
             return sum;
         }
 
-        int hash_function2(){
+        int hash_function2(char *id){
+            int Max_step = find_prime(data.size() / 3);
+            //cout << "Max_step = " << Max_step << endl;
+            int ans = 0;
+            int sum = 1;
+            for (int i = 0; i < 10; i++){
+                if (id[i] >= '0' && id[i] <= '9'){
+                    sum *= id[i];
+                    if (sum >= Max_step){
+                        sum = sum % Max_step;
+                    }
+                }
+            }
+
+            ans = Max_step - sum;
+            return ans;
+        }
+
+        void store(collegeType data_store, int start, int orign, int step){
+
+            
+            if (table[start].flag == 0){//資料為空
+
+                cout << "flag == 0\n";
+                table[start].hash_value = orign;
+                strcpy(table[start].sid, data_store.sid);
+                cout << table[start].sid << "\t" << data_store.sid << endl;
+                strcpy(table[start].sname, data_store.sname);
+                cout << table[start].sname << "\t" << data_store.sname << endl;
+                table[start].avg = data_store.avg;
+                cout << table[start].avg << '\t' << data_store.avg << endl;
+                cout << table[start].sname << "store to " << start << endl;
+                table[start].flag = 1;
+
+            }
+            else if (table[start].flag == 1){
+                
+                cout << "flag == 1\n";
+                int next = start + step;
+                if (next >= table_size) next = next % table_size;
+                store(data_store, next, orign, step);
+
+            }
 
         }
 
@@ -248,10 +298,23 @@ class DoubleHashing{
             int start = 0;
             int step = 0;
             for (int i = 0; i < data.size(); i++){
+                cout << data[i].sname << endl;
                 start = hash_function1(data[i].sid);
                 cout << i << " start = " << start << endl;
-                step = hash_function2();
+                step = hash_function2(data[i].sid);
+                cout << i << " step = " << step << endl;
+
+                store(data[i], start, start, step);
+
             }
+
+
+            for (int i = 0; i < table_size; i++){
+                cout << i << "\t" << table[i].hash_value << "\t";
+                cout << table[i].sid << "\t" << table[i].sname << "\t";
+                cout << table[i].avg << '\n';
+            }
+
         }
 
         void search(){
