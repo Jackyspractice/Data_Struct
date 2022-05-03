@@ -198,6 +198,8 @@ class DoubleHashing{
         vector<collegeType> data;
         int table_size = 0;
         vector<DH_table> table;
+
+        int search_times = 0;
         
         int is_prime(int a){
             if (a == 1) return 0;
@@ -319,9 +321,8 @@ class DoubleHashing{
         }
 
         void search(){
-
+            
         }
-
 
         void write_to_file(){
             ofstream file;
@@ -353,6 +354,9 @@ class DoubleHashing{
             file.close();
             table.clear();
 
+            cout << "Hash table Y has been created.\n";
+
+
         }
 
 };
@@ -383,9 +387,10 @@ int main() {
                 if (type == false)  continue;
 
                 DH.data = input.cSet;
+
                 DH.hash_insert();
                 DH.write_to_file();
-
+                DH.search();
 
                 break;
 
