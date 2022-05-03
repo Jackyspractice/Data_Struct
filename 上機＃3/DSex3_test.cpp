@@ -1,11 +1,12 @@
-//10828152 ???? ??? 10824147 ??? ???
+//10828152 πqæ˜§T•“ ±i™l≥« 10824147 πq∏Í§T Ω≤©|≥’
 #include <iostream>
 #include <string>
 #include <string.h>
 #include <vector>
 #include <fstream>
 #include <iomanip> //setw()
-#include <math.h>
+#include <chrono>
+#include <sys/timeb.h>
 using namespace std;
 
 class collegeType {
@@ -75,37 +76,39 @@ class DataInput {
 			file.open(filename, ios::in);
 			if (!file.is_open()) {
 				cout << "There is no such txt file\n";
-				return;
-			}
-			cSet.clear();
-			string buffer[9];
-			vector<string> buffer_split;
-			buffer_split.clear();
-			string line;
-			data_size = 0;
+				
+			} else {
 
-			while(!file.eof()) { //ÂèØ‰ª•ÊîπÊàêfile.peek() != EOF ËºÉÂ•Ω
+				cSet.clear();
+				string buffer[9];
+				vector<string> buffer_split;
+				buffer_split.clear();
+				string line;
+				data_size = 0;
 
-				getline(file, line, '\n');
+				while(!file.eof()) { //ÂèØ‰ª•ÊîπÊàêfile.peek() != EOF ËºÉÂ•Ω
+
+					getline(file, line, '\n');
 
 
-				data_size++;
-				if (line != "\0") split(buffer, line, '\t');
-				else data_size--;
+					data_size++;
+					if (line != "\0") split(buffer, line, '\t');
+					else data_size--;
 
-				for(int i = 0; i < 9; i++) {
-					buffer_split.push_back(buffer[i]);
-					//cout << "buffer size = " << buffer.size() << endl;
-					//cout << buffer[i] << "\t";
+					for(int i = 0; i < 9; i++) {
+						buffer_split.push_back(buffer[i]);
+						//cout << "buffer size = " << buffer.size() << endl;
+						//cout << buffer[i] << "\t";
+					}
+					//cout << "\n";
 				}
-				//cout << "\n";
-			}
 
-			for(int i = 0; i < data_size ; i++) {
-				store(i, buffer_split);
-			}
+				for(int i = 0; i < data_size ; i++) {
+					store(i, buffer_split);
+				}
 
-			write_binary();
+				write_binary();
+			}
 		}
 
 		void write_binary() {
@@ -123,7 +126,7 @@ class DataInput {
 			}
 			bin_file.close();
 
-			cout << "write binary file successfully\n";
+			cout << "Write binary file successfully!\n";
 		}
 
 		bool read_binary() {
@@ -138,7 +141,7 @@ class DataInput {
 
 
 			if (!bin_file.is_open()) {
-				cout << "Only bin file, Please do 0 fisrt\n";
+				cout << "Only txt file, Please do 0 fisrt\n";
 				return false;
 			}
 
@@ -199,8 +202,12 @@ class Linear {
 	public:
 
 		int size ;
+		
+		
 
 		void BuildHash( vector<collegeType> &cSet, int fname ) {
+
+			
 
 			int NumOfStudent = cSet.size() ;
 			double Success = 0.000 ;
@@ -213,6 +220,8 @@ class Linear {
 
 
 			HashData Primer[HashSize] ;
+
+			
 
 
 			for( int i = 0; i < cSet.size(); i++ ) {
@@ -244,6 +253,7 @@ class Linear {
 			Success = Success / NumOfStudent ;
 
 			Unsucc = Unsuccess( Primer ) ;
+
 
 			WriteFile( Primer, fname, Success, Unsucc ) ;
 
@@ -294,12 +304,14 @@ class Linear {
 			outp.close() ;
 
 			cout << "Hash Table X has been created." << endl ;
-			cout << "Unsuccessful search : " << unsuccess << "comparisons on average." << endl ;
-			cout << "Successful search : " << success << "comparisons on average."<< endl ;
+			cout << "Unsuccessful search : " << unsuccess << " comparisons on average." << endl ;
+			cout << "Successful search : " << success << " comparisons on average."<< endl ;
+			
 
 		} // void write
 
 		double Unsuccess( HashData primer[] ) {
+			
 			double range = 0.000 ;
 			double all = 0.000 ;
 			for( int i = 0; i < size ; i++ ) {
@@ -316,8 +328,10 @@ class Linear {
 					range = 0.000 ;
 				}
 			}
+			
 
 			// cout << all << "/" << size << endl ;
+			
 
 			return all = all/size ;
 
@@ -457,12 +471,12 @@ class DoubleHashing {
 
 		}
 
-		bool compare_char(char *a, char *b){
+		bool compare_char(char *a, char *b) {
 			int times = 0;
-			for (int i = 0; i < 10; i++){
-				if (a[i] == b[i]){
+			for (int i = 0; i < 10; i++) {
+				if (a[i] == b[i]) {
 					if (i == 9) return true;
-				}else{
+				} else {
 					return false;
 				}
 			}
@@ -470,22 +484,21 @@ class DoubleHashing {
 
 		void search() {
 			int *search_times = new int [data.size()];
-			for (int i = 0; i < data.size(); i++){
+			for (int i = 0; i < data.size(); i++) {
 				search_times[i] = 0;
 				int start = hash_function1(data[i].sid);
 				int step = hash_function2(data[i].sid);
 
 				//cout << "data = " << data[i].sid << "\ttable_data = " << table[start].sid << endl;
 
-				while(1){
-					
+				while(1) {
+
 					search_times[i]++;
 
-					if (compare_char(data[i].sid, table[start].sid)){
+					if (compare_char(data[i].sid, table[start].sid)) {
 						//cout << "found!\n";
 						break;
-					}
-					else{
+					} else {
 						//cout << "not found\n";
 						start = start + step;
 						if (start >= table_size) start = start % table_size;
@@ -494,11 +507,11 @@ class DoubleHashing {
 
 			}
 
-			
+
 			int sum = 0;
 			double success = 0.0000;
 
-			for (int i = 0; i < data.size(); i++){
+			for (int i = 0; i < data.size(); i++) {
 				sum += search_times[i];
 				//cout << i << "\tsearch times = " << search_times[i] << endl;
 			}
@@ -544,167 +557,162 @@ class DoubleHashing {
 
 };
 
-class QuardHashing{
+class Quadratic{
+	
 	public:
-		vector<collegeType> data;
-		int table_size = 0;
-		vector<DH_table> table;
 
-		int hash_function1(char *id) {
-			int sum = 1;
-			for (int i = 0; i < 10; i++) {
-				if (id[i] >= '0' && id[i] <= '9') {
-					sum *= id[i];
-					if (sum >= table_size) {
-						sum = sum % table_size;
+		int size ;
+		
+		void BuildHash( vector<collegeType> &cSet, int fname ) {
+
+			
+			int NumOfStudent = cSet.size() ;
+			double Success = 0.000 ;
+			double Unsucc = 0.000 ;
+			double HashSizeDouble = NumOfStudent * 1.2 ;
+			int HashSize = GetPrime( HashSizeDouble ) ;
+			// cout << HashSize << endl ;
+			size = HashSize ;
+
+			HashData Primer[HashSize] ;
+
+			
+
+
+			for( int i = 0; i < cSet.size(); i++ ) {
+				bool InputSuccess = false ;
+				int key = Key( cSet[i].sid, HashSize ) ;
+				int hvalue = key ;
+                int n = 0 ;
+				while( InputSuccess == false ) {
+					if( Primer[key].empty == true ) {
+						Primer[key].hval = hvalue ;
+						strcpy( Primer[key].sid, cSet[i].sid ) ;
+						strcpy( Primer[key].sname, cSet[i].sname ) ;
+						Primer[key].avg = cSet[i].avg ;
+						Primer[key].empty = false ;
+						InputSuccess = true ;
+					} // ß‰®Ï®√øÈ§J
+					else {
+					    Success++ ;
+					    n++ ;
+					    key = hvalue +(n*n) ;
+						while( key >= HashSize ){
+							key = key % HashSize ;
+						}
+							
 					}
-				}
-			}
-			return sum;
-		}
 
-		int hash_function2(int times) {
-			
-			times = pow(times, 2);
-			
-			while(1){
-
-				if (times >= table_size) times = times % table_size;
-				else break;
-			}
-			
-		}
-
-		int store(collegeType data_store, int start) {
-
-
-			if (table[start].flag == 0) {
-
-				//cout << "flag == 0\n";
-				table[start].hash_value = start;
-				strcpy(table[start].sid, data_store.sid);
-				//cout << table[start].sid << "\t" << data_store.sid << endl;
-				strcpy(table[start].sname, data_store.sname);
-				//cout << table[start].sname << "\t" << data_store.sname << endl;
-				table[start].avg = data_store.avg;
-				//cout << table[start].avg << '\t' << data_store.avg << endl;
-				//cout << table[start].sname << "store to " << start << endl;
-				table[start].flag = 1;
-
-				return 0;
-
-			} else if (table[start].flag == 1) {
-
-				return 1;
-
-			}
-
-		}
-
-		int is_prime(int a) {
-			if (a == 1) return 0;
-			else {
-				for (int i = 2; i < a; i++) {
-					if (a % i == 0) return 0;
-				}
-				return 1;
-			}
-		}
-
-		int find_prime(int data_size) {
-			int max = data_size + 1;
-			int ans = 0;
-
-			while(1) {
-				if (is_prime(max) == 1) {
-					ans = max;
-					break;
-				} else max++;
-			}
-
-			return ans;
-		}
-
-		void build_table() {
-			DH_table null_data;
-			int max = int(data.size() * 1.2) + 1;
-			table_size = find_prime(max);
-			//cout << "table size = " << table_size << endl;
-			for(int i = 0; i < table_size; i++) {
-				table.push_back(null_data);
-			}
-			//cout << "table actual size = " << table.size() << endl;
-		}
-
-		void hash_insert() {
-			build_table();
-			int start = 0;
-			int step = 0;
-			int flag = 0;
-			for (int i = 0; i < data.size(); i++) {
-				int crash_times = 0;
-				//cout << data[i].sname << endl;
-				start = hash_function1(data[i].sid);
-				//cout << i << " start = " << start << endl;
-				
-				while (1){
 					
-					flag = store(data[i], start);
+				}
+                Success++ ;
+			}
+			// cout << Success << "/" << NumOfStudent << endl ;
+			Success = Success / NumOfStudent ;
 
-					if (flag == 1){//start ???
-						crash_times++;
-						
-						start = start + hash_function2(crash_times);
+			
 
+			Unsucc = Unsuccess( Primer ) ;
+
+			WriteFile( Primer, fname, Success, Unsucc ) ;
+
+		} // void buildhash
+
+		int Key( char sid[], int hashsize ) {
+			long long int key = 1 ;
+			for( int i = 0; i < strlen(sid); i++ ) {
+				key = key * sid[i] ;
+			}
+
+			return key%hashsize ;
+		} // int key
+
+		int GetPrime( int n ) {
+			int i ;
+			int j ;
+			i = n ;
+			while(true) {
+				i++ ;
+				for( j = 2; j <= i; j++ ) {
+					if( i == j ) {
+						return i ;
+					} else if( i%j == 0 ) {
+						break ;
 					}
-					else break;
 				}
 
 			}
+		} // getprime ®˙1.2≠ø´·≥Ã§pΩËº∆
 
+		void WriteFile( HashData primer[], int fname, double success, double unsuccess ) {
 
-			/*for (int i = 0; i < table_size; i++) {
-				cout << i << "\t" << table[i].hash_value << "\t";
-				cout << table[i].sid << "\t" << table[i].sname << "\t";
-				cout << table[i].avg << '\n';
-			}*/
+			string name( std::to_string(fname) ) ;
+			string FileName = "quadratic" + name + ".txt" ;
+			ofstream outp(FileName) ;
+			outp << "--- Hash Table Z --- (quadratic probing)" << endl ;
 
-		}
-
-		void write_to_file() {
-			ofstream file;
-			string filename = "quad" + filenumber + ".txt";
-			file.open(filename);
-
-			file << " --- Hash Table Z --- (quard hashing)\n";
-
-			for (int i = 0; i < table.size(); i++) {
-
-
-				if (table[i].hash_value == -1) {
-
-					file << "[" << setw(3) << right << i << "]\n";
-
+			for( int i = 0; i < size; i++ ) {
+				outp << "[" << i << "]" ;
+				if( primer[i].empty == true ) {
+					outp << "\n" ;
 				} else {
-					file << "[" << setw(3) << right << i << "]\t";
-
-					file << table[i].hash_value << "\t";
-					file << setw(10) << right << table[i].sid << "\t";
-					file << setw(10) << right << table[i].sname << "\t";
-					file << setw(5) << right << table[i].avg << "\n";
-
+					outp << "\t" << primer[i].hval << "\t" << "," << primer[i].sid << "\t" << "," << primer[i].sname << "\t" << "," << primer[i].avg << endl ;
 				}
 
 			}
+			outp.close() ;
 
-			file.close();
-			table.clear();
+			cout << "Hash Table Z has been created." << endl ;
+			cout << "Unsuccessful search : " << unsuccess << " comparisons on average." << endl ;
+			cout << "Successful search : " << success << " comparisons on average."<< endl ;
 
-			cout << "Hash table Z has been created.\n";
+		} // void write
 
+		double Unsuccess( HashData primer[] ) {
 
-		}
+		
 
+			
+			double range = 0.000 ;
+			double all = 0.000 ;
+			int n = 0 ;
+			int temp = 0 ;
+			
+			for( int i = 0; i < size ; i++ ) {
+				n = 0;
+				if( primer[i].empty == false ) {
+					n++ ;
+					temp = i + (n*n) ;
+					while( temp >= size ){
+					    temp = temp % size ;
+					}
+					while( primer[temp].empty == false ){//???
+						range++ ;
+						n++;
+						temp = i + (n*n) ;
+						while( temp >= size ) temp = temp % size ;
+					}
+					range++;
+						
+					} 
+					all = all + range ;
+					range = 0.000 ;	
+					
+					
+				} 
+
+			
+				
+			
+
+			// cout << all << "/" << size << endl ;
+			
+		
+			
+			return all = all/size ;
+
+		} // Unsuccess
+	
 };
 
 int main() {
@@ -712,34 +720,39 @@ int main() {
 	DataInput input;
 	Linear linear ;
 	DoubleHashing DH;
-	QuardHashing QH;
+	Quadratic q ;
+	std::chrono::steady_clock::time_point t1;
+	std::chrono::steady_clock::time_point t2;
+
 	int command = 777;
-    int fname ;
+	int fname ;
 
 	while(command != -1) {
 		bool type = true;
 		cout << endl << "******** Hash Table ********";
 		cout << endl << "(-1. QUIT )";
-		cout << endl << "* 0. txt to binary *" ;
-		cout << endl << "* 1. Linear Hash   *" ;
-		cout << endl << "* 2. Double Hash   *" ;
-		cout << endl << "* 3. Quard Hash    *" ;
+		cout << endl << "* 0. txt to binary  *" ;
+		cout << endl << "* 1. Linear Hash    *";
+		cout << endl << "* 2. Double Hash    *" ;
+		cout << endl << "* 3. Quadratic Hash *" ;
 		cout << endl << "****************************";
-		cout << endl << "Input a command( -1, 0, 1, 2, 3):" ;
-		
+		cout << endl << "Input a command( -1, 0, 1, 2, 3 ):" ;
+
 		cin >> command;
 		switch(command) {
 			case 0:
 				input.read_txt();
-				cout << "Bulid binary complete!!\n";
+				// cout << "Bulid binary complete!!\n";
 				break;
 
 			case 1:
 				type = input.read_binary() ;
 				if( type == false ) break ;
 				fname = stoi(filenumber) ;
+				t1 = chrono::steady_clock::now();
 				linear.BuildHash( input.cSet, fname ) ;
-
+				t2 = chrono::steady_clock::now();
+				cout << "Total spend time =  " << chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count() << " ns " << endl;
 				break;
 
 			case 2:
@@ -747,31 +760,29 @@ int main() {
 				if( input.cSet.empty() ) {
 					cout << "choose 1 first!" << endl ;
 				} else {
-					
-
+	
 					DH.data = input.cSet;
-
 					DH.hash_insert();
 					DH.write_to_file();
 					DH.search();
 				}
 
 				break;
-
+				
 			case 3:
-
 				if( input.cSet.empty() ) {
 					cout << "choose 1 first!" << endl ;
-				} else {
+				} else{
 					
+					t1 = chrono::steady_clock::now();
+					q.BuildHash( input.cSet, fname ) ;
+					t2 = chrono::steady_clock::now();
+					cout << "Total spend time =  " << chrono::duration_cast<chrono::nanoseconds>(t2 - t1).count() << " ns " << endl;
 
-					QH.data = input.cSet;
-
-					QH.hash_insert();
-					QH.write_to_file();
+				
+					
+					break ;
 				}
-
-				break;
 
 			case -1:
 				break;
