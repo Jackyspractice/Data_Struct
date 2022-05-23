@@ -51,7 +51,7 @@ class Filecontrol {
 
 
                 if (!bin_file.is_open()) {
-                    cout << "Only bin file, Please do 1 fisrt\n";
+                    cout << "File: " << "pairs" << filenumber << ".bin doesn't exist, please retry." << endl ;
                     return false;
                 }
 
@@ -86,7 +86,7 @@ class Filecontrol {
 };
 
 vector<Student>mainVec ;
-vector<int> numberofchild; // 這兩個需要很常在class中傳遞，故直接設成全域
+vector<int> numberofchild;
 
 class Adjacency {
     public:
@@ -101,6 +101,7 @@ class Adjacency {
 
 			else if ( head->weight >= data.weight ) 
 				Insert( head->next, data ) ;
+
 			else { 
 				NextPtr temp = head ;
 				head = new NextData ;
@@ -133,18 +134,27 @@ class Adjacency {
                     Insert(mainVec[where].head, Set[i]);
                 }
 
-                else {  //main中還未存在此putID，新增其putID至main，同時指派其getID及weight
+                else if (where == -1){  //main中還未存在此putID，新增其putID至main，同時指派其getID及weight
                     strcpy(Oneset.putID, Set[i].putID) ;
 					Oneset.head = NULL ;
 					mainVec.push_back(Oneset) ;
                     Insert(mainVec[mainVec.size() - 1].head, Set[i]);
                 }
             }
-            
 
-            Sort( mainVec, 0, mainVec.size()-1 ) ;
+			for (int i = 0; i < Set.size(); i++) {
+				int where = find_main(Set[i].getID);
+				if (where == -1) {
+					strcpy(Oneset.putID, Set[i].getID) ;
+					Oneset.head = NULL ;
+					mainVec.push_back(Oneset) ;
+				}
+			}
+            
+            Sort( 0, mainVec.size()-1 ) ;
             Write( filenumber, mainVec , Set ) ;
         }
+
 
         void Write( string filenumber, vector<Student>mainVec , vector<Data>Set ){
 			
@@ -177,68 +187,54 @@ class Adjacency {
 			cout << "<<< There are " << Set.size() << " nodes in total. >>>" << endl ;
 		}
 
-        void Sort( vector<Student> &mainVec, int first, int last ){
-			int h = last / 2;
-
-			int length = last ;
-			int i = 0 ;
-
-			while (h >= 1) {
-				for (int i = h; i <= length; i++) {
-					for (int j = i; j >= h && strcmp(mainVec[i].putID, mainVec[j].putID) > 0; j -= h) {
-						swap(mainVec[j], mainVec[j - h]);
+        void Sort(int start, int end) {
+			for (int i = end; i > start; i--) {
+				for (int j = start; j < i; j++) {
+					if (strcmp(mainVec[j].putID, mainVec[j + 1].putID) > 0) {
+						swap(mainVec[j], mainVec[j + 1]);
 					}
 				}
-				h = h / 2;
 			}
 		}
 };
-
 class influence {
 	public:
 		
 		deque<int> list;
-
         vector<int> influence_value;
-
 		vector<Student> temp;
 		
+
 		void Clear(){
-			for (int i = 0; i < mainVec.size(); i++) {
-				delete mainVec[i].head->next;
-				mainVec[i].child_where.erase(mainVec[i].child_where.begin(), mainVec[i].child_where.end());
-				mainVec[i].child_where.shrink_to_fit();
-			}
-			list.erase(list.begin(), list.end());
-			list.shrink_to_fit();
-			temp.erase(temp.begin(), temp.end());
-			temp.shrink_to_fit();
-			mainVec.erase(mainVec.begin(), mainVec.end());
-			mainVec.shrink_to_fit();
-			influence_value.erase(influence_value.begin(), influence_value.end());
-			influence_value.shrink_to_fit();
-			numberofchild.erase(numberofchild.begin(), numberofchild.end());
-			numberofchild.shrink_to_fit();
+			list.clear();
+			temp.clear();
+			mainVec.clear();
+			influence_value.clear();
+			numberofchild.clear();
 		}
 
 		void reset_visit() {
 			for (int i = 0; i < mainVec.size(); i++) {
-
 				mainVec[i].visit = false;
-
 			}
 		}
 
 		int findwhere(char *sid) {
 			for( int i = 0; i < mainVec.size(); i++ ){
-
 				if( strcmp(mainVec[i].putID, sid ) == 0 ){
-			
 					//cout << sid << "is at " << i << endl
 					return i;
-
 				}
+			}
+			return -1;
+		}
 
+		int findwhere_temp(char *sid) {
+			for( int i = 0; i < temp.size(); i++ ){
+				if( strcmp(temp[i].putID, sid ) == 0 ){
+					//cout << sid << "is at " << i << endl
+					return i;
+				}
 			}
 			return -1;
 		}
@@ -261,13 +257,12 @@ class influence {
 					int x = list.front();
 
 					tmp = mainVec[x].head;
-
 					list.pop_front();
 					//cout << "pop head\n";
 					
 					for (int j = 0; j < numberofchild[x]; j++){
-
 						where = findwhere(tmp->getID);
+						
 
 						if (where == -1) {
 							Student missing;
@@ -278,12 +273,10 @@ class influence {
 						}
 
 						else if (mainVec[where].visit == false){
-
 							list.push_back(where);
 							mainVec[where].visit = true;
 							value++;
 							mainVec[i].child_where.push_back(where);
-
 						}
 
 						tmp = tmp->next;
@@ -301,11 +294,38 @@ class influence {
 			}
 			
 			temp.assign(mainVec.begin(), mainVec.begin() + mainVec.size());
-			
 
 			Quicksort(influence_value, 0, influence_value.size() - 1);
+			find_group_and_sort();
             Write(filenumber, mainVec, temp) ;
 			Clear();
+		}
+
+		void find_group_and_sort() {
+			int flag = 0;
+			int temp = influence_value[0];
+			int start = 0, diff = influence_value.size() - 1;
+			for (int i = 1; i < mainVec.size(); i++) {
+				if (temp != influence_value[i]) {
+					//cout << "find diff, origin is " << temp << " next is " << influence_value[i] << endl;
+					diff = i;
+					Sort(start, diff - 1);
+					temp = influence_value[i];
+					start = diff;
+					flag = 1;
+				}
+			}
+			if (flag == 0) Sort(start, diff);
+		}
+
+		void Sort(int start, int end) {
+			for (int i = end; i > start; i--) {
+				for (int j = start; j < i; j++) {
+					if (strcmp(mainVec[j].putID, mainVec[j + 1].putID) > 0) {
+						swap(mainVec[j], mainVec[j + 1]);
+					}
+				}
+			}
 		}
 
         void Write(string filenumber, vector<Student> &mainVec, vector<Student> &temp){
@@ -322,8 +342,9 @@ class influence {
 				outp << "["  << (i + 1) << "] " << mainVec[i].putID << ": ";
                 outp << "( " << influence_value[i] << " )" << endl;
 				int n = 1 ;
-				for (int j = 0; j < temp[i].child_where.size(); j++) {
-					int loc = temp[i].child_where[j];
+				int where = findwhere_temp(mainVec[i].putID);
+				for (int j = 0; j < temp[where].child_where.size(); j++) {
+					int loc = temp[where].child_where[j];
 					outp << "\t(" << j + 1 << ") " << temp[loc].putID ;
 					if( n%10 == 0 )
 				        outp << "\n" ;
@@ -342,12 +363,15 @@ class influence {
 			int pivot = a[end];
 			int i = front;
 			for (int j = front; j < end; j++){
+				
 				if (a[j] > pivot){
 					swap(a[i], a[j]);
 					swap(mainVec[i], mainVec[j]);
 					i++;
 				}
+				
 			}
+			
 			swap(a[i], a[end]);
 			swap(mainVec[i], mainVec[end]);
 			return i;
@@ -365,7 +389,6 @@ class influence {
 };
 
 int main(){
-
     Filecontrol input;
     Adjacency adj;
     influence inf;
@@ -407,7 +430,7 @@ int main(){
                 break;
 
             default:
-                cout << "command dosent exist!\n";
+                cout << "command doesn't exist!\n";
         }
     }
 }
