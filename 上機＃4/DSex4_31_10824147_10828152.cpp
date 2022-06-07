@@ -298,6 +298,7 @@ class influence {
 			Quicksort(influence_value, 0, influence_value.size() - 1);
 			find_group_and_sort();
             Write(filenumber, mainVec, temp) ;
+			//top();
 			Clear();
 		}
 
@@ -385,13 +386,207 @@ class influence {
     		}
 		}
 
-        
+        void top(){
+			cout << "top3 : \n";
+			cout << "1. [ " << mainVec[0].putID << ", " << influence_value[0] << " ]\n";
+			second_third();
+		}
+
+		void second_third(){
+			for (int i = 1; i < mainVec.size(); i++) {
+				for (int j = 0; j < mainVec[0].child_where.size(); j++) {
+					for (int k = 0; k < mainVec[i].child_where.size(); k++) {
+						if (mainVec[i].child_where[k] == mainVec[0].child_where[j]) {
+							mainVec[i].child_where.erase(mainVec[i].child_where.begin() + k);
+						}
+					}
+				}
+				Quicksort(mainVec[i].child_where, 0, mainVec[i].child_where.size());
+			}
+			//find max
+			//cout << "2. [ " << mainVec[1].putID << ", " << mainVec[1].child_where.size() << " ]\n";
+		}
+
+
+};
+class influence_weight {
+	public:
+		
+		deque<int> list;
+        vector<int> influence_value;
+		vector<Student> temp;
+
+		void Clear(){
+			list.clear();
+			temp.clear();
+			mainVec.clear();
+			influence_value.clear();
+			numberofchild.clear();
+		}
+
+		void reset_visit() {
+			for (int i = 0; i < mainVec.size(); i++) {
+				mainVec[i].visit = false;
+			}
+		}
+
+		int findwhere(char *sid) {
+			for( int i = 0; i < mainVec.size(); i++ ){
+				if( strcmp(mainVec[i].putID, sid ) == 0 ){
+					//cout << sid << "is at " << i << endl
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		int findwhere_temp(char *sid) {
+			for( int i = 0; i < temp.size(); i++ ){
+				if( strcmp(temp[i].putID, sid ) == 0 ){
+					//cout << sid << "is at " << i << endl
+					return i;
+				}
+			}
+			return -1;
+		}
+
+		void DFS(string filenumber, float fliter) {
+
+			int where = 0; //紀錄child在main的哪裡
+
+			reset_visit();
+
+			for (int i = 0; i < mainVec.size(); i++) {
+				
+				int value = 0;
+
+				list.push_back(i);
+				mainVec[i].visit = true;
+
+				while ( !list.empty() ) {
+
+					int x = list.back();
+					cout << "first back = " << x << '\t';
+					NextPtr tmp = mainVec[x].head;
+					where = findwhere(tmp->getID);
+
+					if (mainVec[where].visit == false) {
+						list.push_back(where);
+						mainVec[where].visit = true;
+						value++;
+						mainVec[i].child_where.push_back(where);
+						cout << "sec back = " << where << '\n';
+					}
+					else {
+						list.pop_back();
+					}
+				}
+
+				reset_visit(); //重設為沒visit過
+
+				influence_value.push_back(value);
+
+			}
+			
+			temp.assign(mainVec.begin(), mainVec.begin() + mainVec.size());
+
+			Quicksort(influence_value, 0, influence_value.size() - 1);
+			find_group_and_sort();
+            Write(filenumber, mainVec, temp) ;
+			Clear();
+		}	
+
+		void find_group_and_sort() {
+			int flag = 0;
+			int temp = influence_value[0];
+			int start = 0, diff = influence_value.size() - 1;
+			for (int i = 1; i < mainVec.size(); i++) {
+				if (temp != influence_value[i]) {
+					//cout << "find diff, origin is " << temp << " next is " << influence_value[i] << endl;
+					diff = i;
+					Sort(start, diff - 1);
+					temp = influence_value[i];
+					start = diff;
+					flag = 1;
+				}
+			}
+			if (flag == 0) Sort(start, diff);
+		}
+
+		void Sort(int start, int end) {
+			for (int i = end; i > start; i--) {
+				for (int j = start; j < i; j++) {
+					if (strcmp(mainVec[j].putID, mainVec[j + 1].putID) > 0) {
+						swap(mainVec[j], mainVec[j + 1]);
+					}
+				}
+			}
+		}
+
+        void Write(string filenumber, vector<Student> &mainVec, vector<Student> &temp){
+			
+			string pairs = "pairs" ;
+			string txt = ".inf" ;
+			string fname = pairs + filenumber + txt ;
+			ofstream outp(fname) ;
+			NextPtr tmp ;
+			
+			outp << "<<< There are " << mainVec.size() << " IDs in total. >>>" << endl ;
+			for( int i = 0; i < mainVec.size(); i++ ){
+				tmp = mainVec[i].head ;
+				outp << "["  << (i + 1) << "] " << mainVec[i].putID << ": ";
+                outp << "( " << influence_value[i] << " )" << endl;
+				int n = 1 ;
+				int where = findwhere_temp(mainVec[i].putID);
+				for (int j = 0; j < temp[where].child_where.size(); j++) {
+					int loc = temp[where].child_where[j];
+					outp << "\t(" << j + 1 << ") " << temp[loc].putID ;
+					if( n%10 == 0 )
+				        outp << "\n" ;
+				    n++ ;
+				}
+				outp << "\n" ;
+			}
+			outp.close() ;
+			
+			cout << "<<< There are " << mainVec.size() << " IDs in total. >>>" << endl ;
+
+			
+		}
+
+		int Partition(vector<int> &a, int front, int end){
+			int pivot = a[end];
+			int i = front;
+			for (int j = front; j < end; j++){
+				
+				if (a[j] > pivot){
+					swap(a[i], a[j]);
+					swap(mainVec[i], mainVec[j]);
+					i++;
+				}
+				
+			}
+			
+			swap(a[i], a[end]);
+			swap(mainVec[i], mainVec[end]);
+			return i;
+		}
+
+		void Quicksort(vector<int> &a, int front, int end){
+			if (front < end){
+				int pivot = Partition(a, front, end);
+				Quicksort(a, front, pivot - 1);
+				Quicksort(a, pivot + 1, end);
+    		}
+		}
 };
 
 int main(){
+
     Filecontrol input;
     Adjacency adj;
     influence inf;
+	influence_weight infw;
 
     int command = 777;
 
@@ -425,6 +620,24 @@ int main(){
 				}
 
                 break;
+
+			case 3:
+
+				if( input.bin_data.empty() ) {
+					cout << "choose 1 first!" << endl ;
+				} else {
+					float gap ;
+					cout << "Input a real number in [0,1]:" << endl ;
+					cin >> gap ;
+					while ( gap < 0 || gap > 1 ) {
+						cout << "Input a real number in [0,1]:" << endl ;
+						cin >> gap ;
+					}
+					infw.DFS( input.filenumber, gap ) ;
+					
+					input.bin_data.clear();
+				}
+				break ;
 
             case 0:
 
